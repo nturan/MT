@@ -7,10 +7,12 @@
 #include "phase_space_generator.h"
 
 namespace sigma::lo {
-	double Hadronic(std::map<std::string, double> v, double *wgt);
+	double Hadronic(std::map<std::string, double> v, double *wgt, double scale_factor);
 	namespace partonic {
 		std::map<std::string,
 			std::function<double( PhaseSpaceGenerator PS )>> Born;
 	}
 }
+
+
 

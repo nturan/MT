@@ -27,7 +27,6 @@ class PartonDistributionFunction {
      **************************************************************************/
     LHAPDF::PDFSet lhapdfset;
     LHAPDF::PDF* lhapdf;
-    LHAPDF::AlphaS_Analytic alphas_analytic;
   public:
     /***********************************************************************//**
      * Getter for the singleton instance.

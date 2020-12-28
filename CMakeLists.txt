@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 enable_language(Fortran)
 set(CMAKE_Fortran_COMPILER gfortran)
-set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(MT "ttbar_NLO")
 
 project (${MT})
