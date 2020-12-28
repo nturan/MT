@@ -2,10 +2,12 @@
  * @author: Turan Nuraliyev
  ******************************************************************************/
 
-#ifndef PARTONDISTFUNC_H
-#define PARTONDISTFUNC_H
+#pragma once
 
 #include "LHAPDF/LHAPDF.h"
+#include <map>
+#include <functional>
+#include <string>
 
 /***************************************************************************//**
  * class for calling parton distribution sets
@@ -14,17 +16,16 @@
  * design.  It uses LHAPDF.
  ******************************************************************************/
 
-class PartonDistFunc {
+class PartonDistributionFunction {
   private:
     static bool hasInstance;  
     static bool isInitialized; 
-    static PartonDistFunc *pdf;
-    PartonDistFunc();  /*!<  private class constructor                        */
+    static PartonDistributionFunction *pdf;
+    PartonDistributionFunction();  /*!<  private class constructor                        */
     /***************************************************************************
      * see LHAPDF documentation page for following members. 
      **************************************************************************/
-    LHAPDF::PDFSet lhapdfset;  
-    std::vector<LHAPDF::PDF*> lhapdfs;
+    LHAPDF::PDFSet lhapdfset;
     LHAPDF::PDF* lhapdf;
     LHAPDF::AlphaS_Analytic alphas_analytic;
   public:
@@ -34,14 +35,11 @@ class PartonDistFunc {
      * returns new PartonDistFunc object, if it is being called for the first 
      * time.  Returns the existing instance, falls it has been called before. 
      **************************************************************************/
-    static PartonDistFunc* GetInstance();
+    static PartonDistributionFunction* GetInstance();
     
     void InitPdfSet( std::string pdfname );
-    void GetPdfValue( double x, double h[13] );
-    double GetPdfValueById( double x, int id );
+    std::map<std::string, std::function<double(double, double, double)>> Fs;
     double GetAlpha( double mur );
-    double GetAnalyticAlpha( double mT, double lambda, int order,
-                             double mur );
     double gg ( double x1, double x2, double muf2 );
     double qqb( double x1, double x2, double muf2 );
     double qbq( double x1, double x2, double muf2 );
@@ -49,7 +47,6 @@ class PartonDistFunc {
     double gqb( double x1, double x2, double muf2 );
     double qg ( double x1, double x2, double muf2 );
     double qbg( double x1, double x2, double muf2 );
-    ~PartonDistFunc();
+    ~PartonDistributionFunction();
 };
 
-#endif //PARTONDISTFUNC_H

@@ -1,3 +1,4 @@
+#pragma once
 struct coupqcd {
 	double gg[2];
 	double g;

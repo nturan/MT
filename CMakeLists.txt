@@ -17,7 +17,10 @@ link_directories("${PROJECT_SOURCE_DIR}/libs/virtual/")
 link_directories("~/src/QCDLoop/ql")
 link_directories("~/src/QCDLoop/ff")
 link_directories("/users/local/lhapdf/lib64")
-add_executable (${MT} "src/main.cc" "src/SysInfo.cc" "src/parton_distribution_function.cc")
+add_executable (${MT} "src/main.cc" 
+                      "src/SysInfo.cc" 
+                      "src/parton_distribution_function.cc" 
+                      "src/cross_sections.cc")
 
 target_link_libraries(${MT} "-lMatrix -ldhelas -lgfortran")
 target_link_libraries(${MT} "-lBSYPPTT -lqcdloop -lff")
