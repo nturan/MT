@@ -21,7 +21,8 @@ add_executable (${MT} "src/main.cc"
                       "src/SysInfo.cc" 
                       "src/parton_distribution_function.cc" 
                       "src/cross_sections.cc" 
-                      "src/phase_space_generator.cc")
+                      "src/phase_space_generator.cc"
+                      "src/qcd_parameters.cc")
 
 target_link_libraries(${MT} "-lMatrix -ldhelas -lgfortran")
 target_link_libraries(${MT} "-lBSYPPTT -lqcdloop -lff")

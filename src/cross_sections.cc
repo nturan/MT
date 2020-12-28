@@ -7,6 +7,6 @@ double sigma::lo::Hadronic( std::map<std::string, double> var, double* wgt ) {
 	for (auto it = param.channels.begin(); it != param.channels.end(); ++it) {
 		std::string channel = *it;
 		res += pdf->Fs[channel](PS.x1_, PS.x2_, param.muf2_)
-			* sigma::lo::partonic::Born[channel](PS, wgt, param);
+			* sigma::lo::partonic::Born[channel]( PS );
 	}
 }
