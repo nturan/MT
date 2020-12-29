@@ -11,4 +11,5 @@ extern struct coupqcd coupqcd_;
 extern struct fermions fermions_;
 extern "C" {
 	double sgg_ttb_(double p1[4], double p2[4], double p3[4], double p4[4]);
+	double suub_ttb_(double p1[4], double p2[4], double p3[4], double p4[4]);
 }

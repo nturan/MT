@@ -18,11 +18,10 @@ link_directories("~/src/QCDLoop/ql")
 link_directories("~/src/QCDLoop/ff")
 link_directories("/users/local/lhapdf/lib64")
 add_executable (${MT} "src/main.cc" 
-                      "src/SysInfo.cc" 
-                      "src/parton_distribution_function.cc" 
+                      "src/SysInfo.cc"
                       "src/cross_sections.cc" 
                       "src/phase_space_generator.cc"
-                      "src/qcd_parameters.cc")
+                      "src/parameters.cc")
 
 target_link_libraries(${MT} "-lMatrix -ldhelas -lgfortran")
 target_link_libraries(${MT} "-lBSYPPTT -lqcdloop -lff")
@@ -36,4 +35,3 @@ target_include_directories(${MT} PUBLIC "/users/local/lhapdf/include")
 target_compile_options(${MT} PUBLIC -Wall)
 target_compile_options(${MT} PUBLIC -O2)
 
-# TODO: Add tests and install targets if needed.
