@@ -25,7 +25,10 @@ namespace sigma::leading_order {
 namespace sigma::next_to_leading_order {
 	HadronicCrossSection Hadronic2, Hadronic3;
 	namespace partonic {
-		extern PartonicContribution Soft, Virt, Coll_left_z, Coll_right_z, Coll_1, Coll_0;
+		extern PartonicContribution Hard, Soft, Virt, Coll_left_z, Coll_right_z, Coll_1, Coll_0;
+		namespace hard {
+			PartonicCrossSection gg, qqb, qbq, qg, gq, qbg, gqb;
+		}
 		namespace soft {
 			PartonicCrossSection gg, qqb, qbq;
 		}
