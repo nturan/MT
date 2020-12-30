@@ -14,7 +14,7 @@ void Parameters::SetColliderEnergy(double ecms){ ecms_ = ecms; }
 void Parameters::SetRenormalizationScale(double mur) { mur2_ = mur * mur; }
 
 void Parameters::SetFactorizationScale(double muf){	
-	muf2_     = muf; 
+	muf2_     = muf*muf; 
 	alpha_s_ = lhapdf->alphasQ2(muf2_);
 	gs2_ = alpha_s_ * 4.0 * M_PI;
 
