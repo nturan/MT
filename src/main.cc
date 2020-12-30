@@ -13,13 +13,14 @@ int main()
 	parameters.SetTopQuarkMass(173.2);
 	parameters.SetFactorizationScale(173.2);
 	parameters.SetRenormalizationScale(173.2);
-	parameters.channels.push_back("gg" );
+	parameters.SetCutParameter(0.0001);
+//	parameters.channels.push_back("gg" );
 	parameters.channels.push_back("qqb");
-	parameters.channels.push_back("qbq");
-	parameters.channels.push_back("qg" );
-	parameters.channels.push_back("gq" );
-	parameters.channels.push_back("qbg");
-	parameters.channels.push_back("gqb");
+//	parameters.channels.push_back("qbq");
+//	parameters.channels.push_back("qg" );
+//	parameters.channels.push_back("gq" );
+//	parameters.channels.push_back("qbg");
+//	parameters.channels.push_back("gqb");
 
 
 
@@ -31,16 +32,91 @@ int main()
 	sigma::leading_order::partonic::Born["gq"]  = std::bind(&NoContribution, _1, _2);
 	sigma::leading_order::partonic::Born["qbg"] = std::bind(&NoContribution, _1, _2);
 	sigma::leading_order::partonic::Born["gqb"] = std::bind(&NoContribution, _1, _2);
-
+	sigma::next_to_leading_order::partonic::Hard["gg"]  = std::bind(&sigma::next_to_leading_order::partonic::hard::gg, _1, _2);
+	sigma::next_to_leading_order::partonic::Hard["qqb"] = std::bind(&sigma::next_to_leading_order::partonic::hard::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Hard["qbq"] = std::bind(&sigma::next_to_leading_order::partonic::hard::qbq, _1, _2);
+	sigma::next_to_leading_order::partonic::Hard["qg"]  = std::bind(&sigma::next_to_leading_order::partonic::hard::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Hard["gq"]  = std::bind(&sigma::next_to_leading_order::partonic::hard::gq, _1, _2);
+	sigma::next_to_leading_order::partonic::Hard["qbg"] = std::bind(&sigma::next_to_leading_order::partonic::hard::qbg, _1, _2);
+	sigma::next_to_leading_order::partonic::Hard["gqb"] = std::bind(&sigma::next_to_leading_order::partonic::hard::gqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Soft["gg"]  = std::bind(&sigma::next_to_leading_order::partonic::soft::gg, _1, _2);
+	sigma::next_to_leading_order::partonic::Soft["qqb"] = std::bind(&sigma::next_to_leading_order::partonic::soft::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Soft["qbq"] = std::bind(&sigma::next_to_leading_order::partonic::soft::qbq, _1, _2);
+	sigma::next_to_leading_order::partonic::Soft["qg"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Soft["gq"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Soft["qbg"] = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Soft["gqb"] = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Virt["gg"]  = std::bind(&sigma::next_to_leading_order::partonic::virt::gg, _1, _2);
+	sigma::next_to_leading_order::partonic::Virt["qqb"] = std::bind(&sigma::next_to_leading_order::partonic::virt::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Virt["qbq"] = std::bind(&sigma::next_to_leading_order::partonic::virt::qbq, _1, _2);
+	sigma::next_to_leading_order::partonic::Virt["qg"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Virt["gq"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Virt["qbg"] = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Virt["gqb"] = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_left_z["gg"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::gg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_left_z["qqb"] = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_left_z["qbq"] = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_left_z["qg"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_left_z["gq"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_right_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_left_z["qbg"] = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_left_z["gqb"] = std::bind(&sigma::next_to_leading_order::partonic::coll_right_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_right_z["gg"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::gg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_right_z["qqb"] = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_right_z["qbq"] = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_right_z["qg"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_right_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_right_z["gq"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_right_z["qbg"] = std::bind(&sigma::next_to_leading_order::partonic::coll_right_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_right_z["gqb"] = std::bind(&sigma::next_to_leading_order::partonic::coll_left_z::qg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_1["gg"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_1::gg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_1["qqb"] = std::bind(&sigma::next_to_leading_order::partonic::coll_1::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_1["qbq"] = std::bind(&sigma::next_to_leading_order::partonic::coll_1::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_1["qg"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_1["gq"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_1["qbg"] = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_1["gqb"] = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_0["gg"]  = std::bind(&sigma::next_to_leading_order::partonic::coll_0::gg, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_0["qqb"] = std::bind(&sigma::next_to_leading_order::partonic::coll_0::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_0["qbq"] = std::bind(&sigma::next_to_leading_order::partonic::coll_0::qqb, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_0["qg"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_0["gq"]  = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_0["qbg"] = std::bind(&NoContribution, _1, _2);
+	sigma::next_to_leading_order::partonic::Coll_0["gqb"] = std::bind(&NoContribution, _1, _2);
 	std::map<std::string, Integrand> my_integrands;
 	std::map<std::string, std::pair<double, double>> my_variables;
 	my_variables["E1"]     = std::pair<double, double>{ 173.2, 13000.0 / 2.0 };
 	my_variables["phi1"]   = std::pair<double, double>{ -M_PI, M_PI };
 	my_variables["theta1"] = std::pair<double, double>{ 0.0, M_PI };
 	my_variables["theta2"] = std::pair<double, double>{ 0.0, M_PI };
-
-
-	my_integrands["mur=m"] = std::bind(&sigma::leading_order::Hadronic, _1, _2, parameters);
+	my_variables["z"] = std::pair<double, double>{ 0.0, 1.0 };
+	const int Nf = NF - 1;
+	// const int FDH = 0;  /* Four-Dimensional-Helicity scheme                    */
+	const int HV_CDR = 1;  /* 't Hooft-Veltman scheme                           */
+	double m = parameters.GetTopQuarkMass();
+	std::map<std::string, double> new_variables;
+	new_variables["E1"] = 337.047;
+	new_variables["phi1"] = -2.47412;
+	new_variables["theta1"] = 0.277505;
+	new_variables["theta2"] = 0.0779612;
+	PhaseSpaceGenerator PS(new_variables, parameters);
+	std::cout << printP(PS.p1_) << std::endl;
+	std::cout << printP(PS.p2_) << std::endl;
+	std::cout << printP(PS.k1_) << std::endl;
+	std::cout << printP(PS.k2_) << std::endl;
+	std::cout << PS.dGamma_ << std::endl;
+	
+	bsyppttinit_(&m, &Nf, &HV_CDR);
+	std::complex<double> amp[3];
+	double mur2 = parameters.GetSquaredRenormalizationScale();
+	double* p1 = PS.p1_;
+	double* p2 = PS.p2_;
+	double* p3 = PS.k1_;
+	double* p4 = PS.k2_;
+	//bsyqqttsq_(p1,p2,p3,p4, &mur2, amp);
+	//std::cout << amp[0].real() << std::endl;
+	//std::cout << amp[1].real() << std::endl;
+	//std::cout << amp[2].real() << std::endl;
+	//return 0;
+	my_integrands["mur=m"] = std::bind(&sigma::next_to_leading_order::Hadronic2, _1, _2, parameters);
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = 173.2;
 

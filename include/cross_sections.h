@@ -36,16 +36,16 @@ namespace sigma::next_to_leading_order {
 			PartonicCrossSection gg, qqb, qbq;
 		}
 		namespace coll_left_z {
-			PartonicCrossSection gg, qqb, qbq, qg;
+			PartonicCrossSection gg, qqb, qg;
 		}
 		namespace coll_right_z {
 			PartonicCrossSection qg;
 		}
 		namespace coll_1 {
-			PartonicCrossSection gg, qqb, qbq;
+			PartonicCrossSection gg, qqb;
 		}
 		namespace coll_0 {
-			PartonicCrossSection gg, qqb, qbq;
+			PartonicCrossSection gg, qqb;
 		}
 		
 	}

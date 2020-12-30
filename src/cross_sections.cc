@@ -33,14 +33,19 @@ double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	double z = PS.z_;
+	//std::cout << var["E1"] << std::endl;
+	//std::cout << var["phi1"] << std::endl;
+	//std::cout << var["theta1"] << std::endl;
+	//std::cout << var["theta2"] << std::endl;
+//	double z = PS.z_;
 	for (auto ij = p.channels.begin(); ij != p.channels.end(); ++ij) {
-		res += p.Fs[*ij](x1, x2) * (  sigma::next_to_leading_order::partonic::Soft[*ij](PS, p)
-									+ sigma::next_to_leading_order::partonic::Virt[*ij](PS, p)
-									+ sigma::next_to_leading_order::partonic::Coll_1[*ij](PS, p)
-									+ sigma::next_to_leading_order::partonic::Coll_0[*ij](PS, p))
-			+ p.Fs[*ij](x1 / z, x2) * sigma::next_to_leading_order::partonic::Coll_left_z[*ij](PS, p) / z
-			+ p.Fs[*ij](x1, x2 / z) * sigma::next_to_leading_order::partonic::Coll_right_z[*ij](PS, p) / z;
+		//res += p.Fs[*ij](x1, x2) * (  sigma::next_to_leading_order::partonic::Soft[*ij](PS, p)
+		//	                        + sigma::next_to_leading_order::partonic::Virt[*ij](PS, p)
+		//							+ sigma::next_to_leading_order::partonic::Coll_1[*ij](PS, p)
+		//							+ sigma::next_to_leading_order::partonic::Coll_0[*ij](PS, p))
+		//	+ p.Fs[*ij](x1 / z, x2) * sigma::next_to_leading_order::partonic::Coll_left_z[*ij](PS, p) / z
+		//	+ p.Fs[*ij](x1, x2 / z) * sigma::next_to_leading_order::partonic::Coll_right_z[*ij](PS, p) / z;
+		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Virt[*ij](PS, p);
 	}
 	return res;
 }
@@ -265,9 +270,14 @@ double sigma::next_to_leading_order::partonic::virt::qqb(PhaseSpaceGenerator PS,
 	double dGamma = PS.dGamma_;
 	double coup = p.GetAlphaS();
 	divTerm cGamma = { 0.0, 0.0, std::pow(coup, 3), 0.0, 0.0 };
-	complex<double> amp[3];
+	std::complex<double> amp[3];
 	double mur2 = p.GetSquaredRenormalizationScale();
-	bsyqqttsq_(PS.p2_, PS.p1_, PS.k1_, PS.k2_, &mur2, amp);
+	double p1[4] = { PS.p1_[0], PS.p1_[1], PS.p1_[2], PS.p1_[3] };
+	double p2[4] = { PS.p2_[0], PS.p2_[1], PS.p2_[2], PS.p2_[3] };
+	double p3[4] = { PS.k1_[0], PS.k1_[1], PS.k1_[2], PS.k1_[3] };
+	double p4[4] = { PS.k2_[0], PS.k2_[1], PS.k2_[2], PS.k2_[3] };
+	std::cout << "you called me" << std::endl;
+	bsyqqttsq_(p1,p2,p3,p4, &mur2, amp);
 	divTerm result = cGamma * 4.0 * M_PI
 		* (divTerm) { amp[0].real(), amp[1].real(), amp[2].real(), 0.0, 0.0 };
 	return 1.0 / 2.0 / s * dGamma * result.eps0 * kPbarn;
@@ -303,7 +313,7 @@ double sigma::next_to_leading_order::partonic::coll_left_z::gg(PhaseSpaceGenerat
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * result * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_left_z::qbq(PhaseSpaceGenerator PS, Parameters& p) {
+double sigma::next_to_leading_order::partonic::coll_left_z::qqb(PhaseSpaceGenerator PS, Parameters& p) {
 	double s = PS.s_;
 	double z = PS.z_;
 	double dGamma = PS.dGamma_;
