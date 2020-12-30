@@ -1,7 +1,6 @@
-#include "pptt@NLO/n_dimensional_integral.h"
+#include "n_dimensional_integral.h"
 
 Integral::Integral( std::map<std::string, std::pair<double, double>> limits, std::map<std::string, Integrand> integrands ){
-    // use std::map of variables with lower and upper bounds
     limits_ = limits;
     dimension_ = limits.size();
     integrands_ = integrands;

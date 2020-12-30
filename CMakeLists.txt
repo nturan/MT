@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 enable_language(Fortran)
 set(CMAKE_Fortran_COMPILER gfortran)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(MT "ttbar_NLO")
 
 project (${MT})
@@ -21,7 +21,9 @@ add_executable (${MT} "src/main.cc"
                       "src/SysInfo.cc"
                       "src/cross_sections.cc" 
                       "src/phase_space_generator.cc"
-                      "src/parameters.cc")
+                      "src/parameters.cc"
+                      "src/n_dimensional_integral.cc" 
+                      "libs/ranlux-3.3/ranlxd.c")
 
 target_link_libraries(${MT} "-lMatrix -ldhelas -lgfortran")
 target_link_libraries(${MT} "-lBSYPPTT -lqcdloop -lff")

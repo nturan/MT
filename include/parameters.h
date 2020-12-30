@@ -16,6 +16,7 @@ private:
 public:
 	Parameters(std::string pdf_name);
 	void InitializePartonDistributionFunctionSets(std::string pdf_name);
+	std::vector<std::string> channels;
 	std::map<std::string, std::function<double(double, double)>> Fs;
 	double gg(double x1, double x2, double muf2);
 	double qqb(double x1, double x2, double muf2);
@@ -34,5 +35,4 @@ public:
 	double GetTopQuarkMass();
 	double GetAlphaS();
 	double GetSquaredGs();
-	std::vector<std::string> channels;
  };

@@ -17,6 +17,15 @@ void Parameters::SetFactorizationScale(double muf){
 	muf2_     = muf; 
 	alpha_s_ = lhapdf->alphasQ2(muf2_);
 	gs2_ = alpha_s_ * 4.0 * M_PI;
+
+	using namespace std::placeholders;
+	Fs["gg"] = std::bind(&Parameters::gg, this, _1, _2, muf2_);
+	Fs["qqb"] = std::bind(&Parameters::qqb, this, _1, _2, muf2_);
+	Fs["qbq"] = std::bind(&Parameters::qbq, this, _1, _2, muf2_);
+	Fs["gq"] = std::bind(&Parameters::gq, this, _1, _2, muf2_);
+	Fs["qg"] = std::bind(&Parameters::qg, this, _1, _2, muf2_);
+	Fs["gqb"] = std::bind(&Parameters::gqb, this, _1, _2, muf2_);
+	Fs["qbg"] = std::bind(&Parameters::qbg, this, _1, _2, muf2_);
 }
 void Parameters::SetTopQuarkMass(double m){	m_ = m; }
 
@@ -41,14 +50,6 @@ void Parameters::InitializePartonDistributionFunctionSets(std::string pdf_name)
 		exit(1);
 	}
 	lhapdf = lhapdfset.mkPDF(0);
-	using namespace std::placeholders;
-	Fs["gg"]  = std::bind(&Parameters::gg,  this, _1, _2, muf2_);
-	Fs["qqb"] = std::bind(&Parameters::qqb, this, _1, _2, muf2_);
-	Fs["qbq"] = std::bind(&Parameters::qbq, this, _1, _2, muf2_);
-	Fs["gq"]  = std::bind(&Parameters::gq,  this, _1, _2, muf2_);
-	Fs["qg"]  = std::bind(&Parameters::qg,  this, _1, _2, muf2_);
-	Fs["gqb"] = std::bind(&Parameters::gqb, this, _1, _2, muf2_);
-	Fs["qbg"] = std::bind(&Parameters::qbg, this, _1, _2, muf2_);
 }
 
 
