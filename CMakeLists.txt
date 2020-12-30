@@ -23,10 +23,12 @@ add_executable (${MT} "src/main.cc"
                       "src/phase_space_generator.cc"
                       "src/parameters.cc"
                       "src/n_dimensional_integral.cc" 
-                      "libs/ranlux-3.3/ranlxd.c")
+                      "libs/ranlux-3.3/ranlxd.c" 
+                      "src/helper.cc")
 
 target_link_libraries(${MT} "-lMatrix -ldhelas -lgfortran")
 target_link_libraries(${MT} "-lBSYPPTT -lqcdloop -lff")
+target_link_libraries(${MT} "-lgsl -lgslcblas")
 target_link_libraries(${MT} "-lLHAPDF")
 
 target_include_directories(${MT} PUBLIC "include")

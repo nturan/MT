@@ -28,6 +28,7 @@ void Parameters::SetFactorizationScale(double muf){
 	Fs["qbg"] = std::bind(&Parameters::qbg, this, _1, _2, muf2_);
 }
 void Parameters::SetTopQuarkMass(double m){	m_ = m; }
+void Parameters::SetCutParameter(double xmin) { xmin_ = xmin; }
 
 double Parameters::GetColliderEnergy() { return ecms_; }
 double Parameters::GetSquaredRenormalizationScale() { return mur2_; }
@@ -35,6 +36,7 @@ double Parameters::GetSquaredFactorizationScale() { return muf2_; }
 double Parameters::GetTopQuarkMass() { return m_; }
 double Parameters::GetAlphaS() { return alpha_s_; }
 double Parameters::GetSquaredGs() { return gs2_; }
+double Parameters::GetCutParameter() { return xmin_; }
 
 void Parameters::InitializePartonDistributionFunctionSets(std::string pdf_name)
 {

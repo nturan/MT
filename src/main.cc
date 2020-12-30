@@ -24,13 +24,13 @@ int main()
 
 
 	using namespace std::placeholders;
-	sigma::lo::partonic::Born["gg"]  = std::bind(&sigma::lo::partonic::gg,  _1, _2);
-	sigma::lo::partonic::Born["qqb"] = std::bind(&sigma::lo::partonic::qqb, _1, _2);
-	sigma::lo::partonic::Born["qbq"] = std::bind(&sigma::lo::partonic::qbq, _1, _2);
-	sigma::lo::partonic::Born["qg"]  = std::bind(&sigma::lo::partonic::NoContribution, _1, _2);
-	sigma::lo::partonic::Born["gq"]  = std::bind(&sigma::lo::partonic::NoContribution, _1, _2);
-	sigma::lo::partonic::Born["qbg"] = std::bind(&sigma::lo::partonic::NoContribution, _1, _2);
-	sigma::lo::partonic::Born["gqb"] = std::bind(&sigma::lo::partonic::NoContribution, _1, _2);
+	sigma::leading_order::partonic::Born["gg"]  = std::bind(&sigma::leading_order::partonic::gg,  _1, _2);
+	sigma::leading_order::partonic::Born["qqb"] = std::bind(&sigma::leading_order::partonic::qqb, _1, _2);
+	sigma::leading_order::partonic::Born["qbq"] = std::bind(&sigma::leading_order::partonic::qbq, _1, _2);
+	sigma::leading_order::partonic::Born["qg"]  = std::bind(&NoContribution, _1, _2);
+	sigma::leading_order::partonic::Born["gq"]  = std::bind(&NoContribution, _1, _2);
+	sigma::leading_order::partonic::Born["qbg"] = std::bind(&NoContribution, _1, _2);
+	sigma::leading_order::partonic::Born["gqb"] = std::bind(&NoContribution, _1, _2);
 
 	std::map<std::string, Integrand> my_integrands;
 	std::map<std::string, std::pair<double, double>> my_variables;
@@ -40,7 +40,7 @@ int main()
 	my_variables["theta2"] = std::pair<double, double>{ 0.0, M_PI };
 
 
-	my_integrands["mur=m"] = std::bind(&sigma::lo::Hadronic, _1, _2, parameters);
+	my_integrands["mur=m"] = std::bind(&sigma::leading_order::Hadronic, _1, _2, parameters);
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = 173.2;
 
