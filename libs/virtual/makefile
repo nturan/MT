@@ -1,8 +1,8 @@
 THIS=.
 
 COMPILER=gfortran-7
-QCDLOOP=../QCDLoop
-BSYPPTT=../bsypptt/fortran
+QCDLOOP=~/src/QCDLoop
+BSYPPTT=.
 
 OBJECTS=bsyspinors.o bsyspinit.o ampggint.o ampgg.o ampqqint.o ampqq.o bsypptt.o
 
@@ -12,7 +12,7 @@ ALL: $(OBJECTS);
 	rm *.o
 
 %.o: %.f;
-	$(COMPILER) -c -o  $@ $<
+	$(COMPILER) -std=legacy -c -o  $@ $<
 
 clean: ;
 	rm *.a

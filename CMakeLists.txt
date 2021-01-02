@@ -3,8 +3,9 @@
 #
 cmake_minimum_required (VERSION 3.8)
 enable_language(Fortran)
-set(CMAKE_Fortran_COMPILER gfortran)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_Fortran_COMPILER gfortran-7)
+set(CMAKE_CPP_COMPILER g++-7)
+set(CMAKE_CXX_STANDARD 11)
 set(MT "ttbar_NLO")
 
 project (${MT})
@@ -12,10 +13,10 @@ project (${MT})
 # Add source to this project's executable.
 add_subdirectory("src")
 link_directories("${PROJECT_SOURCE_DIR}/libs/amps/")
-link_directories("~/src/helas204/")
+link_directories("/home/turan/src/helas204/")
 link_directories("${PROJECT_SOURCE_DIR}/libs/virtual/")
-link_directories("~/src/QCDLoop/ql")
-link_directories("~/src/QCDLoop/ff")
+link_directories("/home/turan/src/QCDLoop/ql")
+link_directories("/home/turan/src/QCDLoop/ff")
 link_directories("/users/local/lhapdf/lib64")
 add_executable (${MT} "src/main.cc" 
                       "src/SysInfo.cc"

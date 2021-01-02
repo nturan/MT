@@ -13,14 +13,14 @@ int main()
 	parameters.SetTopQuarkMass(173.2);
 	parameters.SetFactorizationScale(173.2);
 	parameters.SetRenormalizationScale(173.2);
-	parameters.SetCutParameter(0.0001);
-//	parameters.channels.push_back("gg" );
-	parameters.channels.push_back("qqb");
+	parameters.SetCutParameter(0.0005);
+	parameters.channels.push_back("gg" );
+//	parameters.channels.push_back("qqb");
 //	parameters.channels.push_back("qbq");
-//	parameters.channels.push_back("qg" );
-//	parameters.channels.push_back("gq" );
-//	parameters.channels.push_back("qbg");
-//	parameters.channels.push_back("gqb");
+//	parameters.channels.push_back("qg" );//correct here
+//	parameters.channels.push_back("gq" );//correct here
+//	parameters.channels.push_back("qbg");//correct here
+//	parameters.channels.push_back("gqb");//correct here
 
 
 
@@ -91,34 +91,16 @@ int main()
 	const int Nf = NF - 1;
 	// const int FDH = 0;  /* Four-Dimensional-Helicity scheme                    */
 	const int HV_CDR = 1;  /* 't Hooft-Veltman scheme                           */
-	double m = parameters.GetTopQuarkMass();
-	std::map<std::string, double> new_variables;
-	new_variables["E1"] = 337.047;
-	new_variables["phi1"] = -2.47412;
-	new_variables["theta1"] = 0.277505;
-	new_variables["theta2"] = 0.0779612;
-	PhaseSpaceGenerator PS(new_variables, parameters);
-	std::cout << printP(PS.p1_) << std::endl;
-	std::cout << printP(PS.p2_) << std::endl;
-	std::cout << printP(PS.k1_) << std::endl;
-	std::cout << printP(PS.k2_) << std::endl;
-	std::cout << PS.dGamma_ << std::endl;
-	
+	double m = parameters.GetTopQuarkMass();	
 	bsyppttinit_(&m, &Nf, &HV_CDR);
-	std::complex<double> amp[3];
-	double mur2 = parameters.GetSquaredRenormalizationScale();
-	double* p1 = PS.p1_;
-	double* p2 = PS.p2_;
-	double* p3 = PS.k1_;
-	double* p4 = PS.k2_;
-	//bsyqqttsq_(p1,p2,p3,p4, &mur2, amp);
-	//std::cout << amp[0].real() << std::endl;
-	//std::cout << amp[1].real() << std::endl;
-	//std::cout << amp[2].real() << std::endl;
-	//return 0;
+
 	my_integrands["mur=m"] = std::bind(&sigma::next_to_leading_order::Hadronic2, _1, _2, parameters);
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = 173.2;
+
+	unsigned int iseed = 3720758;
+	const int lxlev = 1;
+	rlxd_init(lxlev, iseed);
 
 	Integral my_integral(my_variables, my_integrands);
 	my_integral.ExecuteVegas(1, 10, 100000, 1);

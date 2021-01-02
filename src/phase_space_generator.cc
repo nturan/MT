@@ -3,7 +3,8 @@
 
 PhaseSpaceGenerator::PhaseSpaceGenerator(std::map<std::string, double> var, Parameters& p)
 {
-	p_ = &p;
+	m_ = p.GetTopQuarkMass();
+	ecms_ = p.GetColliderEnergy();
 	if (var.size() == 4) {
 		generatePS2(var);
 	}
@@ -30,9 +31,9 @@ void PhaseSpaceGenerator::generatePS2(std::map<std::string, double> var)
 	double dEta1 = 1.0 / std::sin(theta1);
 	double dEta2 = 1.0 / std::sin(theta2);
 
-	double m = p_->GetTopQuarkMass();
+	double m = m_;
 	double m2 = std::pow(m, 2);
-	double Ecms = p_->GetColliderEnergy();
+	double Ecms = ecms_;
 	double Shad = std::pow(Ecms, 2);
 
 	double k1p = std::sqrt((E1 * E1 - m2)) / std::cosh(eta1);   /* transversal momenta      */
