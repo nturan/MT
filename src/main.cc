@@ -15,12 +15,12 @@ int main()
 	parameters.SetRenormalizationScale(173.2);
 	parameters.SetCutParameter(0.0005);
 	parameters.channels.push_back("gg" );
-//	parameters.channels.push_back("qqb");
-//	parameters.channels.push_back("qbq");
-//	parameters.channels.push_back("qg" );//correct here
-//	parameters.channels.push_back("gq" );//correct here
-//	parameters.channels.push_back("qbg");//correct here
-//	parameters.channels.push_back("gqb");//correct here
+	parameters.channels.push_back("qqb");
+	parameters.channels.push_back("qbq");
+	parameters.channels.push_back("qg" );//correct here
+	parameters.channels.push_back("gq" );//correct here
+	parameters.channels.push_back("qbg");//correct here
+	parameters.channels.push_back("gqb");//correct here
 
 
 

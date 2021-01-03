@@ -35,14 +35,14 @@ double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var
 	double x2 = PS.x2_;
 	double z = PS.z_;
 	for (auto ij = p.channels.begin(); ij != p.channels.end(); ++ij) {
-	//	res += p.Fs[*ij](x1, x2) * (  sigma::leading_order::partonic::Born[*ij](PS, p)
-	//		                        + sigma::next_to_leading_order::partonic::Soft[*ij](PS, p)
-	//		                        + sigma::next_to_leading_order::partonic::Virt[*ij](PS, p)
-	//								+ sigma::next_to_leading_order::partonic::Coll_1[*ij](PS, p)
-	//								+ sigma::next_to_leading_order::partonic::Coll_0[*ij](PS, p))
-	//		+ p.Fs[*ij](x1 / z, x2) * sigma::next_to_leading_order::partonic::Coll_left_z[*ij](PS, p) / z
-	//		+ p.Fs[*ij](x1, x2 / z) * sigma::next_to_leading_order::partonic::Coll_right_z[*ij](PS, p) / z;
-		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Virt[*ij](PS, p);
+		res += p.Fs[*ij](x1, x2) * (  sigma::leading_order::partonic::Born[*ij](PS, p)
+			                        + sigma::next_to_leading_order::partonic::Soft[*ij](PS, p)
+			                        + sigma::next_to_leading_order::partonic::Virt[*ij](PS, p)
+									+ sigma::next_to_leading_order::partonic::Coll_1[*ij](PS, p)
+									+ sigma::next_to_leading_order::partonic::Coll_0[*ij](PS, p))
+			+ p.Fs[*ij](x1 / z, x2) * sigma::next_to_leading_order::partonic::Coll_left_z[*ij](PS, p) / z
+			+ p.Fs[*ij](x1, x2 / z) * sigma::next_to_leading_order::partonic::Coll_right_z[*ij](PS, p) / z;
+	//	res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Virt[*ij](PS, p);
 	}
 	return res;
 }
@@ -256,10 +256,10 @@ double sigma::next_to_leading_order::partonic::virt::gg(PhaseSpaceGenerator PS, 
 	divTerm cGamma = { 0.0, 0.0, 1.0, 0.0, 0.0 };
 	std::complex<double> amp[3];
 	double mur2 = p.GetSquaredRenormalizationScale();
-	double p1[4] = { PS.p1_[1], PS.p1_[2], PS.p1_[3], PS.p1_[0] };
-	double p2[4] = { PS.p2_[1], PS.p2_[2], PS.p2_[3], PS.p2_[0] };
-	double k1[4] = { PS.k1_[1], PS.k1_[2], PS.k1_[3], PS.k1_[0] };
-	double k2[4] = { PS.k2_[1], PS.k2_[2], PS.k2_[3], PS.k2_[0] };
+	double p1[4] = { PS.p1_[0], PS.p1_[1], PS.p1_[2], PS.p1_[3] };
+	double p2[4] = { PS.p2_[0], PS.p2_[1], PS.p2_[2], PS.p2_[3] };
+	double k1[4] = { PS.k1_[0], PS.k1_[1], PS.k1_[2], PS.k1_[3] };
+	double k2[4] = { PS.k2_[0], PS.k2_[1], PS.k2_[2], PS.k2_[3] };
 	bsyggttsq_(p1, p2, k1, k2, &mur2, amp);
 	divTerm result = cGamma * 4.0 * M_PI * std::pow(alpha_s, 3)
 		* (divTerm) { amp[0].real(), amp[1].real(), amp[2].real(), 0.0, 0.0 };
