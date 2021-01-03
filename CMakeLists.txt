@@ -4,6 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 enable_language(Fortran)
 set(CMAKE_Fortran_COMPILER gfortran-7)
+set(CMAKE_Fortran_FLAGS "${CMAKE_FORTRAN_FLAGS} -std=legacy")
 set(CMAKE_CPP_COMPILER g++-7)
 set(CMAKE_CXX_STANDARD 11)
 set(MT "ttbar_NLO")
@@ -18,6 +19,15 @@ link_directories("${PROJECT_SOURCE_DIR}/libs/virtual/")
 link_directories("/home/turan/src/QCDLoop/ql")
 link_directories("/home/turan/src/QCDLoop/ff")
 link_directories("/users/local/lhapdf/lib64")
+add_library(BSYppttModule "libs/virtual/bsyspinors.f"
+                          "libs/virtual/bsyspinit.f"
+                          "libs/virtual/ampggint.f"
+                          "libs/virtual/ampgg.f"
+                          "libs/virtual/ampqqint.f"
+                          "libs/virtual/ampqq.f"
+                          "libs/virtual/bsypptt.f")
+
+target_link_libraries(BSYppttModule "-lqcdloop" -"lff")
 add_executable (${MT} "src/main.cc" 
                       "src/SysInfo.cc"
                       "src/cross_sections.cc" 
@@ -27,13 +37,16 @@ add_executable (${MT} "src/main.cc"
                       "libs/ranlux-3.3/ranlxd.c" 
                       "src/helper.cc")
 
+
+#target_include_directories(${MT} PUBLIC "libs/virtual")
+target_link_libraries(${MT} BSYppttModule)
+
 target_link_libraries(${MT} "-lMatrix -ldhelas -lgfortran")
-target_link_libraries(${MT} "-lBSYPPTT -lqcdloop -lff")
+#target_link_libraries(${MT} "-lBSYPPTT -lqcdloop -lff")
 target_link_libraries(${MT} "-lgsl -lgslcblas")
 target_link_libraries(${MT} "-lLHAPDF")
 
 target_include_directories(${MT} PUBLIC "include")
-target_include_directories(${MT} PUBLIC "libs/virtual")
 target_include_directories(${MT} PUBLIC "libs/amps")
 target_include_directories(${MT} PUBLIC "/users/local/lhapdf/include")
 

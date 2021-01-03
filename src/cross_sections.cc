@@ -256,10 +256,10 @@ double sigma::next_to_leading_order::partonic::virt::gg(PhaseSpaceGenerator PS, 
 	divTerm cGamma = { 0.0, 0.0, 1.0, 0.0, 0.0 };
 	std::complex<double> amp[3];
 	double mur2 = p.GetSquaredRenormalizationScale();
-	double p1[4] = { PS.p1_[0], PS.p1_[1], PS.p1_[2], PS.p1_[3] };
-	double p2[4] = { PS.p2_[0], PS.p2_[1], PS.p2_[2], PS.p2_[3] };
-	double k1[4] = { PS.k1_[0], PS.k1_[1], PS.k1_[2], PS.k1_[3] };
-	double k2[4] = { PS.k2_[0], PS.k2_[1], PS.k2_[2], PS.k2_[3] };
+	double p1[4] = { PS.p1_[1], PS.p1_[2], PS.p1_[3], PS.p1_[0] };
+	double p2[4] = { PS.p2_[1], PS.p2_[2], PS.p2_[3], PS.p2_[0] };
+	double k1[4] = { PS.k1_[1], PS.k1_[2], PS.k1_[3], PS.k1_[0] };
+	double k2[4] = { PS.k2_[1], PS.k2_[2], PS.k2_[3], PS.k2_[0] };
 	bsyggttsq_(p1, p2, k1, k2, &mur2, amp);
 	divTerm result = cGamma * 4.0 * M_PI * std::pow(alpha_s, 3)
 		* (divTerm) { amp[0].real(), amp[1].real(), amp[2].real(), 0.0, 0.0 };
