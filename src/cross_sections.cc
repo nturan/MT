@@ -33,16 +33,8 @@ double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	double z = PS.z_;
 	for (auto ij = p.channels.begin(); ij != p.channels.end(); ++ij) {
-		res += p.Fs[*ij](x1, x2) * (  sigma::leading_order::partonic::Born[*ij](PS, p)
-			                        + sigma::next_to_leading_order::partonic::Soft[*ij](PS, p)
-			                        + sigma::next_to_leading_order::partonic::Virt[*ij](PS, p)
-									+ sigma::next_to_leading_order::partonic::Coll_1[*ij](PS, p)
-									+ sigma::next_to_leading_order::partonic::Coll_0[*ij](PS, p))
-			+ p.Fs[*ij](x1 / z, x2) * sigma::next_to_leading_order::partonic::Coll_left_z[*ij](PS, p) / z
-			+ p.Fs[*ij](x1, x2 / z) * sigma::next_to_leading_order::partonic::Coll_right_z[*ij](PS, p) / z;
-	//	res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Virt[*ij](PS, p);
+		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Hard[*ij](PS, p);
 	}
 	return res;
 }

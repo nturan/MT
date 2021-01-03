@@ -1,7 +1,6 @@
 #pragma once
 
 #include <map>
-#include "amps.h"
 #include "parameters.h"
 #include "phase_space_generator.h"
 #include "helper.h"
