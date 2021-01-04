@@ -87,16 +87,19 @@ int main()
 	my_variables["phi1"]   = std::pair<double, double>{ -M_PI, M_PI };
 	my_variables["theta1"] = std::pair<double, double>{ 0.0, M_PI };
 	my_variables["theta2"] = std::pair<double, double>{ 0.0, M_PI };
-	my_variables["E3"] = std::pair<double, double>{ 0.0, 13000.0 };
-	my_variables["phi3"] = std::pair<double, double>{ -M_PI, M_PI };
-	my_variables["theta3"] = std::pair<double, double>{ 0.0, M_PI };
+//	my_variables["E3"] = std::pair<double, double>{ 0.0, 13000.0 };
+//	my_variables["phi3"] = std::pair<double, double>{ -M_PI, M_PI };
+//	my_variables["theta3"] = std::pair<double, double>{ 0.0, M_PI };
 	const int Nf = NF - 1;
 	// const int FDH = 0;  /* Four-Dimensional-Helicity scheme                    */
 	const int HV_CDR = 1;  /* 't Hooft-Veltman scheme                           */
 	double m = parameters.GetTopQuarkMass();	
 	bsyppttinit_(&m, &Nf, &HV_CDR);
 
-	my_integrands["mur=m"] = std::bind(&sigma::next_to_leading_order::Hadronic3, _1, _2, parameters);
+	Histogram pt("PT[top]", std::make_pair(300.0, 1000.0), 50, &calcTransversalMomentum, std::vector<std::string>{"top"});
+	std::vector<Histogram> histograms = {pt};
+	//std::bind always copies the argument.  to force it pass by reference i used std::ref
+	my_integrands["mur=m"] = std::bind(&sigma::leading_order::Hadronic, _1, _2, parameters, std::ref(histograms));
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = 173.2;
 
@@ -106,6 +109,7 @@ int main()
 
 	Integral my_integral(my_variables, my_integrands);
 	my_integral.ExecuteVegas(1, 10, 100000, 1);
+	histograms.at(0).Print();
 
 	return 0;
 }

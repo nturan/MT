@@ -7,7 +7,7 @@
 #include <complex>
 #include <functional>
 
-typedef std::function<double(std::map<std::string,double>,double*)> Integrand;
+typedef std::function<double(std::map<std::string,double>,double&)> Integrand;
 
 class Integral{
 public:

@@ -10,7 +10,7 @@ PartonicContribution sigma::next_to_leading_order::partonic::Coll_1;
 PartonicContribution sigma::next_to_leading_order::partonic::Coll_0;
 
 
-double sigma::leading_order::Hadronic( std::map<std::string, double> var, double* wgt, Parameters &p) {
+double sigma::leading_order::Hadronic( std::map<std::string, double> var, double& wgt, Parameters &p, std::vector<Histogram>& histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
 	if (PS.dGamma_ == 0) {
@@ -22,10 +22,13 @@ double sigma::leading_order::Hadronic( std::map<std::string, double> var, double
 		std::string channel = *it;
 		res += p.Fs[channel](x1, x2) * sigma::leading_order::partonic::Born[channel]( PS, p );
 	}
+	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
+		(*it).Fill(PS, res * wgt);
+	}
 	return res;
 }
 
-double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var, double* wgt, Parameters& p) {
+double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var, double& wgt, Parameters& p, std::vector<Histogram>& histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
 	if (PS.dGamma_ == 0) {
@@ -36,10 +39,13 @@ double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var
 	for (auto ij = p.channels.begin(); ij != p.channels.end(); ++ij) {
 		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Hard[*ij](PS, p);
 	}
+	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
+		(*it).Fill(PS, res * wgt);
+	}
 	return res;
 }
 
-double sigma::next_to_leading_order::Hadronic3(std::map<std::string, double> var, double* wgt, Parameters& p) {
+double sigma::next_to_leading_order::Hadronic3(std::map<std::string, double> var, double& wgt, Parameters& p, std::vector<Histogram>& histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
 	if (PS.dGamma_ == 0) {
@@ -49,6 +55,9 @@ double sigma::next_to_leading_order::Hadronic3(std::map<std::string, double> var
 	double x2 = PS.x2_;
 	for (auto ij = p.channels.begin(); ij != p.channels.end(); ++ij) {
 		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Hard[*ij](PS, p);
+	}
+	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
+		(*it).Fill(PS, res * wgt);
 	}
 	return res;
 }

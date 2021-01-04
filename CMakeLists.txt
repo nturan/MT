@@ -27,7 +27,8 @@ add_executable (${MT} "src/main.cc"
                       "src/phase_space_generator.cc"
                       "src/parameters.cc"
                       "src/n_dimensional_integral.cc"
-                      "src/helper.cc")
+                      "src/helper.cc" 
+                      "src/histogram.cc")
 
 target_link_libraries(${MT} virtualAmps)
 target_link_libraries(${MT} amps)
