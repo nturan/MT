@@ -1,6 +1,7 @@
 #pragma once
 
 #include "phase_space_generator.h"
+#include <sstream>
 #include <iostream>
 #include <functional>
 #include <string>
@@ -25,9 +26,20 @@ private:
 	std::vector<Bin> data_;
 	std::vector<std::string> particles_;
 	Bin underflow_, overflow_;
+	double ecms_, mur_, muf_, m_;
+	std::string pdf_name_;
+	std::map<std::string, ParameterFunction> parameters_{
+		{"PT",  &calcTransversalMomentum},
+		{"E", &calcEnergy},
+		{"Y", &calcRapidity},
+		{"ETA", &calcPseudoRapidity},
+		{"PHI", &calcAzimuth},
+		{"M", &calcInvariantMass}
+	};
 public:
 	Histogram(std::string name, std::pair<double, double> limits, unsigned int number_of_bins, 
-		ParameterFunction parameter, std::vector<std::string> particles);
+		ParameterFunction parameter, std::vector<std::string> particles, Parameters& p);
+	Histogram(std::string initialization_string, Parameters& p);
 	void Fill(PhaseSpaceGenerator PS, double weight);
 	void Print();
 

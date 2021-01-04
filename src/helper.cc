@@ -4,6 +4,7 @@
 using namespace std;
 
 
+
 double calcInvariantMass(const double vectorP[4]) {
     return sqrt(dotp(vectorP, vectorP));
 }

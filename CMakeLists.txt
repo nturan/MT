@@ -28,7 +28,8 @@ add_executable (${MT} "src/main.cc"
                       "src/parameters.cc"
                       "src/n_dimensional_integral.cc"
                       "src/helper.cc" 
-                      "src/histogram.cc")
+                      "src/histogram.cc" 
+                      "include/cxxopts.hpp")
 
 target_link_libraries(${MT} virtualAmps)
 target_link_libraries(${MT} amps)

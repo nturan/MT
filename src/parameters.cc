@@ -2,12 +2,7 @@
 
 Parameters::Parameters( std::string pdf_name ) {
 	InitializePartonDistributionFunctionSets(pdf_name);
-	std::cout << "Dont forget to:\n";
-	std::cout << " o SetColliderEnergy()\n";
-	std::cout << " o SetRenormalizationScale()\n";
-	std::cout << " o SetFactorizationScale()\n";
-	std::cout << " o SetTopQuarkMass()\n";
-	std::cout << std::endl;
+	pdf_name_ = pdf_name;
 }
 
 void Parameters::SetColliderEnergy(double ecms){ ecms_ = ecms; }
@@ -30,6 +25,7 @@ void Parameters::SetFactorizationScale(double muf){
 void Parameters::SetTopQuarkMass(double m){	m_ = m; }
 void Parameters::SetCutParameter(double xmin) { xmin_ = xmin; }
 
+std::string Parameters::GetPdfName(){ return pdf_name_; }
 double Parameters::GetColliderEnergy() { return ecms_; }
 double Parameters::GetSquaredRenormalizationScale() { return mur2_; }
 double Parameters::GetSquaredFactorizationScale() { return muf2_; }

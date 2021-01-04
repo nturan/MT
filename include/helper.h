@@ -13,6 +13,7 @@
 #include <gsl/gsl_sf_dilog.h>  
 #include <vector>
 #include <complex>
+#include <map>
 
 
 using namespace std;
@@ -181,6 +182,7 @@ extern "C" {
     double sug_ttbu_(double p1[4], double p2[4], double p3[4], double p4[4], double p5[4]);
     double subg_ttbub_(double p1[4], double p2[4], double p3[4], double p4[4], double p5[4]);
 }
+
 
 /******************************************************************************/
 /* The following functions, methods are implemented for convenience, easy     */

@@ -15,6 +15,7 @@ const int NF = 6;                   /* number of quark flavours */
 class Parameters {
 private:
 	double ecms_, mur2_, muf2_, m_, alpha_s_, gs2_, xmin_;
+	std::string pdf_name_;
 	LHAPDF::PDFSet lhapdfset;
 	LHAPDF::PDF* lhapdf;
 public:
@@ -34,6 +35,7 @@ public:
 	void SetFactorizationScale(double muf);
 	void SetTopQuarkMass(double m);
 	void SetCutParameter(double xmin);
+	std::string GetPdfName();
 	double GetColliderEnergy();
 	double GetSquaredRenormalizationScale();
 	double GetSquaredFactorizationScale();
