@@ -1,8 +1,28 @@
 #include "parameters.h"
 
-Parameters::Parameters( std::string pdf_name ) {
+Parameters::Parameters(std::string pdf_name, double ecms, double mur,
+	double muf, double m, double xmin, std::vector<std::string> channels) {
 	InitializePartonDistributionFunctionSets(pdf_name);
 	pdf_name_ = pdf_name;
+	SetFactorizationScale(muf);
+	SetColliderEnergy(ecms);
+	SetRenormalizationScale(mur);
+	SetTopQuarkMass(m);
+	SetCutParameter(xmin);
+	if (std::find(channels.begin(), channels.end(), "all") != channels.end()) {
+		channels_.push_back("gg");
+		channels_.push_back("qqb");
+		channels_.push_back("qbq");
+		channels_.push_back("qg");
+		channels_.push_back("gq");
+		channels_.push_back("qbg");
+		channels_.push_back("gqb");
+	}
+	else {
+		for (auto it = channels.begin(); it != channels.end(); ++it) {
+			channels_.push_back(*it);
+		}
+	}
 }
 
 void Parameters::SetColliderEnergy(double ecms){ ecms_ = ecms; }

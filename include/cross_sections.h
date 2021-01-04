@@ -18,8 +18,9 @@ PartonicCrossSection NoContribution;
 namespace sigma::leading_order {
 	HadronicCrossSection Hadronic;
 	namespace partonic {
-		extern PartonicContribution Born;
 		PartonicCrossSection gg, qqb, qbq; 
+
+		extern PartonicContribution Born;
 	}
 }
 

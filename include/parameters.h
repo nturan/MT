@@ -19,9 +19,9 @@ private:
 	LHAPDF::PDFSet lhapdfset;
 	LHAPDF::PDF* lhapdf;
 public:
-	Parameters(std::string pdf_name);
+	Parameters(std::string pdf_name, double ecms, double mur, double muf, double m, double xmin, std::vector<std::string> channels);
 	void InitializePartonDistributionFunctionSets(std::string pdf_name);
-	std::vector<std::string> channels;
+	std::vector<std::string> channels_;
 	std::map<std::string, std::function<double(double, double)>> Fs;
 	double gg(double x1, double x2, double muf2);
 	double qqb(double x1, double x2, double muf2);

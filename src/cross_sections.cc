@@ -1,13 +1,76 @@
 #include "cross_sections.h"
-
-PartonicContribution sigma::leading_order::partonic::Born;
-PartonicContribution sigma::next_to_leading_order::partonic::Hard;
-PartonicContribution sigma::next_to_leading_order::partonic::Soft;
-PartonicContribution sigma::next_to_leading_order::partonic::Virt;
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_left_z;
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_right_z;
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_1;
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_0;
+PartonicContribution sigma::leading_order::partonic::Born = {
+	{"gg", &sigma::leading_order::partonic::gg},
+	{"qqb", &sigma::leading_order::partonic::qqb},
+	{"qbq", &sigma::leading_order::partonic::qbq},
+	{"qg", &NoContribution},
+	{"gq", &NoContribution},
+	{"qbg", &NoContribution},
+	{"gqb", &NoContribution}
+};
+PartonicContribution sigma::next_to_leading_order::partonic::Hard = {
+	{"gg",  &sigma::next_to_leading_order::partonic::hard::gg},
+	{"qqb", &sigma::next_to_leading_order::partonic::hard::qqb},
+	{"qbq", &sigma::next_to_leading_order::partonic::hard::qbq},
+	{"qg", &sigma::next_to_leading_order::partonic::hard::qg},
+	{"gq", &sigma::next_to_leading_order::partonic::hard::gq},
+	{"qbg", &sigma::next_to_leading_order::partonic::hard::qbg},
+	{"gqb", &sigma::next_to_leading_order::partonic::hard::gqb}
+};
+PartonicContribution sigma::next_to_leading_order::partonic::Soft = {
+	{"gg",  &sigma::next_to_leading_order::partonic::soft::gg},
+	{"qqb", &sigma::next_to_leading_order::partonic::soft::qqb},
+	{"qbq", &sigma::next_to_leading_order::partonic::soft::qbq},
+	{"qg",  &NoContribution},
+	{"gq",  &NoContribution},
+	{"qbg", &NoContribution},
+	{"gqb", &NoContribution}
+};
+PartonicContribution sigma::next_to_leading_order::partonic::Virt = {
+	{"gg",  &sigma::next_to_leading_order::partonic::virt::gg},
+	{"qqb", &sigma::next_to_leading_order::partonic::virt::qqb},
+	{"qbq", &sigma::next_to_leading_order::partonic::virt::qbq},
+	{"qg",  &NoContribution},
+	{"gq",  &NoContribution},
+	{"qbg", &NoContribution},
+	{"gqb", &NoContribution}
+};
+PartonicContribution sigma::next_to_leading_order::partonic::Coll_left_z = {
+	{"gg",  &sigma::next_to_leading_order::partonic::coll_left_z::gg},
+	{"qqb", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
+	{"qbq", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
+	{"qg",  &sigma::next_to_leading_order::partonic::coll_left_z::qg},
+	{"gq",  &sigma::next_to_leading_order::partonic::coll_right_z::qg},
+	{"qbg", &sigma::next_to_leading_order::partonic::coll_left_z::qg},
+	{"gqb", &sigma::next_to_leading_order::partonic::coll_right_z::qg}
+};
+PartonicContribution sigma::next_to_leading_order::partonic::Coll_right_z = {
+	{"gg",  &sigma::next_to_leading_order::partonic::coll_left_z::gg},
+	{"qqb", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
+	{"qbq", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
+	{"qg",  &sigma::next_to_leading_order::partonic::coll_right_z::qg},
+	{"gq",  &sigma::next_to_leading_order::partonic::coll_left_z::qg},
+	{"qbg", &sigma::next_to_leading_order::partonic::coll_right_z::qg},
+	{"gqb", &sigma::next_to_leading_order::partonic::coll_left_z::qg}
+};
+PartonicContribution sigma::next_to_leading_order::partonic::Coll_1 = {
+	{"gg",  &sigma::next_to_leading_order::partonic::coll_1::gg},
+	{"qqb", &sigma::next_to_leading_order::partonic::coll_1::qqb},
+	{"qbq", &sigma::next_to_leading_order::partonic::coll_1::qqb},
+	{"qg",  &NoContribution},
+	{"gq",  &NoContribution},
+	{"qbg", &NoContribution},
+	{"gqb", &NoContribution}
+};
+PartonicContribution sigma::next_to_leading_order::partonic::Coll_0 = {
+	{"gg",  &sigma::next_to_leading_order::partonic::coll_0::gg},
+	{"qqb", &sigma::next_to_leading_order::partonic::coll_0::qqb},
+	{"qbq", &sigma::next_to_leading_order::partonic::coll_0::qqb},
+	{"qg",  &NoContribution},
+	{"gq",  &NoContribution},
+	{"qbg", &NoContribution},
+	{"gqb", &NoContribution}
+};
 
 
 double sigma::leading_order::Hadronic( std::map<std::string, double> var, double& wgt, Parameters &p, std::vector<Histogram>& histograms) {
@@ -18,7 +81,7 @@ double sigma::leading_order::Hadronic( std::map<std::string, double> var, double
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	for (auto it = p.channels.begin(); it != p.channels.end(); ++it) {
+	for (auto it = p.channels_.begin(); it != p.channels_.end(); ++it) {
 		std::string channel = *it;
 		res += p.Fs[channel](x1, x2) * sigma::leading_order::partonic::Born[channel]( PS, p );
 	}
@@ -36,7 +99,7 @@ double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	for (auto ij = p.channels.begin(); ij != p.channels.end(); ++ij) {
+	for (auto ij = p.channels_.begin(); ij != p.channels_.end(); ++ij) {
 		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Hard[*ij](PS, p);
 	}
 	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
@@ -53,7 +116,7 @@ double sigma::next_to_leading_order::Hadronic3(std::map<std::string, double> var
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	for (auto ij = p.channels.begin(); ij != p.channels.end(); ++ij) {
+	for (auto ij = p.channels_.begin(); ij != p.channels_.end(); ++ij) {
 		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Hard[*ij](PS, p);
 	}
 	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
