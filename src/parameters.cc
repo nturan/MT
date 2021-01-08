@@ -1,6 +1,15 @@
 #include "parameters.h"
 
+Parameters::Parameters() {
+	
+}
+
 Parameters::Parameters(std::string pdf_name, double ecms, double mur,
+	double muf, double m, double xmin, std::vector<std::string> channels) {
+	Initialize(pdf_name, ecms, mur, muf, m, xmin, channels);
+}
+
+void Parameters::Initialize(std::string pdf_name, double ecms, double mur,
 	double muf, double m, double xmin, std::vector<std::string> channels) {
 	InitializePartonDistributionFunctionSets(pdf_name);
 	pdf_name_ = pdf_name;

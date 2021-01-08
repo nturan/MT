@@ -42,12 +42,8 @@ int main( int argc, char* argv[] ) {
 	std::vector<std::string> channels = result["ch"].as<std::vector<std::string>>();
 	std::string pdf_name = result["pdf"].as<std::string>();
 	std::map<std::string, Parameters> parameters;
-	parameters.insert(std::map<std::string, Parameters>::value_type( "scale=1.0", Parameters(pdf_name, ecms, mur, muf, m, xmin, channels) ));
-	if (scale_is_dynamic) {
+	std::map<std::string, std::vector<Histogram*>*> histograms;
 
-		parameters.insert(std::map<std::string, Parameters>::value_type("scale=2.0", Parameters(pdf_name, ecms, 2.0*mur, 2.0*muf, m, xmin, channels)));
-		parameters.insert(std::map<std::string, Parameters>::value_type("scale=0.5", Parameters(pdf_name, ecms, 0.5*mur, 0.5*muf, m, xmin, channels)));
-	}
 
 
 
@@ -59,19 +55,18 @@ int main( int argc, char* argv[] ) {
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = m;
 	
-	std::vector<std::vector<Histogram>> histograms;
 
-	for (auto it = parameters.begin(); it != parameters.end(); ++it) {
-		histograms.push_back(std::vector<Histogram>{
-			Histogram("M(top atop) 50 300.0 1000.0", it->second),
-			Histogram("PT(top) 50 0.0 500.0", it->second),
-			Histogram("PT(atop) 50 0.0 500.0", it->second),
-			Histogram("Y(top) 50 -5.0 5.0", it->second),
-			Histogram("E(top) 50 0.0 1000.0", it->second),
-			Histogram("PHI(top) 50 -4.0 4.0", it->second),
-			Histogram("ETA(top) 50 -10.0 10.0", it->second),
-			Histogram("ETA(atop) 50 -10.0 10.0", it->second) });
-	}
+	//for (auto it = parameters.begin(); it != parameters.end(); ++it) {
+	//	histograms[it->first] = std::vector<Histogram>{
+	//		Histogram("M(top atop) 50 300.0 1000.0", it->second),
+	//		Histogram("PT(top) 50 0.0 500.0", it->second),
+	//		Histogram("PT(atop) 50 0.0 500.0", it->second),
+	//		Histogram("Y(top) 50 -5.0 5.0", it->second),
+	//		Histogram("E(top) 50 0.0 1000.0", it->second),
+	//		Histogram("PHI(top) 50 -4.0 4.0", it->second),
+	//		Histogram("ETA(top) 50 -10.0 10.0", it->second),
+	//		Histogram("ETA(atop) 50 -10.0 10.0", it->second) };
+	//}
 
 
 
@@ -112,37 +107,59 @@ int main( int argc, char* argv[] ) {
 
 	using namespace std::placeholders;
 	//std::bind always copies the argument.  to force it pass by reference i used std::ref
-	int i = 0;
+	
+
+	Parameters p1(pdf_name, ecms, mur, muf, m, xmin, channels);
+	Parameters p2(pdf_name, ecms, 2*mur, 2*muf, m, xmin, channels);
+	Parameters p3(pdf_name, ecms, 0.5 * mur, 0.5 * muf, m, xmin, channels);
+
+
+	parameters.insert(std::pair<std::string, Parameters>("one", p1));
+	parameters.insert(std::pair<std::string, Parameters>("two", p2));
+	parameters.insert(std::pair<std::string, Parameters>("three", p3));
+
 	for (auto it = parameters.begin(); it != parameters.end(); ++it) {
-		leading_order_integrands[it->first] = std::bind(&sigma::leading_order::Hadronic, 
-			_1, _2, std::ref(it->second), std::ref(histograms.at(i)));
 
-		next_to_leading_order_twobody_integrands[it->first] = std::bind(&sigma::next_to_leading_order::Hadronic2,
-			_1, _2, std::ref(it->second), std::ref(histograms.at(i)));
+		std::vector<Histogram*> *hists = new std::vector<Histogram*>();
+		hists->push_back(new Histogram("M(top atop) 50 300.0 1000.0", it->second));
+		hists->push_back(new Histogram("PT(top) 50 0.0 500.0", it->second));
 
-		next_to_leading_order_threebody_integrands[it->first] = std::bind(&sigma::next_to_leading_order::Hadronic3,
-			_1, _2, std::ref(it->second), std::ref(histograms.at(i)));
-		++i;
+		histograms.insert(std::pair<std::string, std::vector<Histogram*>*>(it->first, hists));
+		leading_order_integrands[it->first] = std::bind(&sigma::leading_order::Hadronic, _1, _2, std::ref(it->second), hists);
+		next_to_leading_order_twobody_integrands[it->first] = std::bind(&sigma::next_to_leading_order::Hadronic2, _1, _2, std::ref(it->second), hists);
+		next_to_leading_order_threebody_integrands[it->first] = std::bind(&sigma::next_to_leading_order::Hadronic3, _1, _2, std::ref(it->second), hists);
 	}
+	
 
-	std::map<std::string, std::vector<Integral>> integrals{
-		{"lo", std::vector<Integral>{Integral(leading_order_variables, leading_order_integrands)}},
-		{"nlo", std::vector<Integral>{
-			Integral(next_to_leading_order_twobody_variables,   next_to_leading_order_twobody_integrands),
-			Integral(next_to_leading_order_threebody_variables, next_to_leading_order_threebody_integrands)}}
-	};
+	std::map<std::string, std::vector<Integral*>> integrals;
+	Integral *leading_order_integral = new Integral(leading_order_variables, leading_order_integrands);
+	Integral *next_to_leading_order_twobody_integral = new Integral(next_to_leading_order_twobody_variables, next_to_leading_order_twobody_integrands);
+	Integral *next_to_leading_order_threebody_integral = new Integral(next_to_leading_order_threebody_variables, next_to_leading_order_threebody_integrands);
+
+	integrals.insert(std::pair<std::string, std::vector<Integral*>>("lo",  std::vector<Integral*>{ leading_order_integral }));
+	integrals.insert(std::pair<std::string, std::vector<Integral*>>("nlo", std::vector<Integral*>{ next_to_leading_order_twobody_integral,
+		                                                                                           next_to_leading_order_threebody_integral}));
 
 	for (auto it = po.begin(); it != po.end(); ++it) {
-		for (auto ij = integrals[*it].begin(); ij != integrals[*it].end(); ++ij) {
-			ij->ExecuteVegas(1, 10, 1000, 1);
-		}
-	}
-	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
-		for (auto ij = it->begin(); ij != it->end(); ++ij) {
-			ij->Print();
+		for (auto ij = integrals.find(*it)->second.begin(); ij != integrals.find(*it)->second.end(); ++ij) {
+			(*ij)->ExecuteVegas(1, 10, 1000, 1);
 		}
 	}
 
+	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
+		std::cout << "Histogram for parameter set: " << it->first << std::endl;
+		for (auto ij = it->second->begin(); ij != it->second->end(); ++ij) {
+			(*ij)->Print();
+			delete *ij;
+		}
+		it->second->clear();
+		delete it->second;
+	}
+	parameters.clear();
+	histograms.clear();
+	delete leading_order_integral;
+	delete next_to_leading_order_twobody_integral;
+	delete next_to_leading_order_threebody_integral;
 
 	return 0;
 }

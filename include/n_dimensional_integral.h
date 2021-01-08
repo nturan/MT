@@ -12,12 +12,13 @@ typedef std::function<double(std::map<std::string,double>,double&)> Integrand;
 class Integral{
 public:
   Integral( std::map<std::string, std::pair<double, double>>, std::map<std::string, Integrand> integrands );
-  double ExecuteVegas( const int entry, const int itmx, const int ncall, const int nprn=0 );
+  ~Integral();
+  double ExecuteVegas( int entry, int itmx, int ncall, int nprn=0 );
     
   std::map<std::string, double> integral_, error_, chi2a_;
+  std::map<std::string, Integrand> integrands_;
 
 protected:
-  std::map<std::string, Integrand> integrands_;
   std::map<std::string, std::pair<double, double>> limits_;
   Integrand integrand_;
   int dimension_, calls_ = 100000, iterations_ = 0, length_;

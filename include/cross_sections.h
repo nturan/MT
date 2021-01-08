@@ -9,7 +9,7 @@
 typedef double PartonicCrossSection(PhaseSpaceGenerator,Parameters&);
 
 typedef double HadronicCrossSection(std::map<std::string, double> v, double& wgt, 
-	Parameters& p, std::vector<Histogram>& histograms);
+	Parameters& p, std::vector<Histogram*>* histograms);
 
 typedef std::map<std::string, std::function<double(PhaseSpaceGenerator, Parameters&)>> PartonicContribution;
 

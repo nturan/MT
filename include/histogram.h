@@ -40,6 +40,7 @@ public:
 	Histogram(std::string name, std::pair<double, double> limits, unsigned int number_of_bins, 
 		ParameterFunction parameter, std::vector<std::string> particles, Parameters& p);
 	Histogram(std::string initialization_string, Parameters& p);
+	~Histogram();
 	void Fill(PhaseSpaceGenerator PS, double weight);
 	void Print();
 

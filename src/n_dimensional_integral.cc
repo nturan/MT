@@ -8,9 +8,15 @@ Integral::Integral( std::map<std::string, std::pair<double, double>> limits, std
     integrator_ = new Vegas<Integral>(*this, length_);
 }
 
-double Integral::ExecuteVegas(const int entry, const int itmx, const int ncall,const int nprn) {
+Integral::~Integral()
+{
+    delete integrator_;
+    std::cout << "integrator is deleted" << std::endl;
+}
 
-  iterations_+=itmx;
+double Integral::ExecuteVegas(int entry, int itmx, int ncall,int nprn) {
+
+  iterations_ += itmx;
   calls_=ncall;
 
   integrator_->setitmx(iterations_);
@@ -67,8 +73,9 @@ double Integral::f(double x[],double wgt, double res[]) {
   int number_of_calls = integrator_->getcalls();
   double weight = wgt / number_of_calls / iterations_;
   for ( auto it = integrands_.begin(); it != integrands_.end(); ++it ) {
-    res[i] = it->second( variables, weight )*jac;
-    ++i;
+      //std::cout << weight << std::endl;
+      res[i] = it->second(variables, weight) * jac;
+      ++i;
   }
   
   // std::cout << result.at(0) << std::endl;

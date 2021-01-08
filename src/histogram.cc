@@ -46,6 +46,10 @@ Histogram::Histogram(std::string name, std::pair<double, double> limits, unsigne
 	pdf_name_ = p.GetPdfName();
 }
 
+Histogram::~Histogram(){
+	std::cout << "Histogram: " << name_ << " deleted" << std::endl;
+}
+
 Histogram::Histogram(std::string initialization_string, Parameters& p) {
 
 	std::string s;
@@ -87,6 +91,7 @@ Histogram::Histogram(std::string initialization_string, Parameters& p) {
 	overflow_.n = 0;
 	overflow_.v = 0.0;
 	overflow_.e2 = 0.0;
+	name_ = parameter_string;
 	parameter_ = parameters_[parameter_string];
 //	parameter_ = &calcInvariantMass;
 	ecms_ = p.GetColliderEnergy();
