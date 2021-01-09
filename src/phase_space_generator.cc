@@ -1,11 +1,11 @@
 #include "phase_space_generator.h"
 
 
-PhaseSpaceGenerator::PhaseSpaceGenerator(std::map<std::string, double> var, Parameters& p)
+PhaseSpaceGenerator::PhaseSpaceGenerator(std::map<std::string, double> var, Parameters* p)
 {
-	m_ = p.GetTopQuarkMass();
-	ecms_ = p.GetColliderEnergy();
-	xmin_ = p.GetCutParameter();
+	m_ = p->GetTopQuarkMass();
+	ecms_ = p->GetColliderEnergy();
+	xmin_ = p->GetCutParameter();
 	if (var.size() == 4) {
 		generatePS2(var);
 	}

@@ -6,16 +6,16 @@
 #include "helper.h"
 #include "histogram.h"
 
-typedef double PartonicCrossSection(PhaseSpaceGenerator,Parameters&);
+typedef double PartonicCrossSection(PhaseSpaceGenerator,Parameters*);
 
 typedef double HadronicCrossSection(std::map<std::string, double> v, double& wgt, 
-	Parameters& p, std::vector<Histogram*>* histograms);
+	Parameters* p, std::vector<Histogram*>* histograms);
 
-typedef std::map<std::string, std::function<double(PhaseSpaceGenerator, Parameters&)>> PartonicContribution;
+typedef std::map<std::string, std::function<double(PhaseSpaceGenerator, Parameters*)>> PartonicContribution;
 
 
 PartonicCrossSection NoContribution;
-namespace sigma::leading_order {
+namespace lo {
 	HadronicCrossSection Hadronic;
 	namespace partonic {
 		PartonicCrossSection gg, qqb, qbq; 
@@ -24,7 +24,7 @@ namespace sigma::leading_order {
 	}
 }
 
-namespace sigma::next_to_leading_order {
+namespace nlo {
 	HadronicCrossSection Hadronic2, Hadronic3;
 	namespace partonic {
 		extern PartonicContribution Hard, Soft, Virt, Coll_left_z, Coll_right_z, Coll_1, Coll_0;

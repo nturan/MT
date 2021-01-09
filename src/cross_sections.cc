@@ -1,71 +1,71 @@
 #include "cross_sections.h"
-PartonicContribution sigma::leading_order::partonic::Born = {
-	{"gg", &sigma::leading_order::partonic::gg},
-	{"qqb", &sigma::leading_order::partonic::qqb},
-	{"qbq", &sigma::leading_order::partonic::qbq},
+PartonicContribution lo::partonic::Born = {
+	{"gg", &lo::partonic::gg},
+	{"qqb", &lo::partonic::qqb},
+	{"qbq", &lo::partonic::qbq},
 	{"qg", &NoContribution},
 	{"gq", &NoContribution},
 	{"qbg", &NoContribution},
 	{"gqb", &NoContribution}
 };
-PartonicContribution sigma::next_to_leading_order::partonic::Hard = {
-	{"gg",  &sigma::next_to_leading_order::partonic::hard::gg},
-	{"qqb", &sigma::next_to_leading_order::partonic::hard::qqb},
-	{"qbq", &sigma::next_to_leading_order::partonic::hard::qbq},
-	{"qg", &sigma::next_to_leading_order::partonic::hard::qg},
-	{"gq", &sigma::next_to_leading_order::partonic::hard::gq},
-	{"qbg", &sigma::next_to_leading_order::partonic::hard::qbg},
-	{"gqb", &sigma::next_to_leading_order::partonic::hard::gqb}
+PartonicContribution nlo::partonic::Hard = {
+	{"gg",  &nlo::partonic::hard::gg},
+	{"qqb", &nlo::partonic::hard::qqb},
+	{"qbq", &nlo::partonic::hard::qbq},
+	{"qg", &nlo::partonic::hard::qg},
+	{"gq", &nlo::partonic::hard::gq},
+	{"qbg", &nlo::partonic::hard::qbg},
+	{"gqb", &nlo::partonic::hard::gqb}
 };
-PartonicContribution sigma::next_to_leading_order::partonic::Soft = {
-	{"gg",  &sigma::next_to_leading_order::partonic::soft::gg},
-	{"qqb", &sigma::next_to_leading_order::partonic::soft::qqb},
-	{"qbq", &sigma::next_to_leading_order::partonic::soft::qbq},
+PartonicContribution nlo::partonic::Soft = {
+	{"gg",  &nlo::partonic::soft::gg},
+	{"qqb", &nlo::partonic::soft::qqb},
+	{"qbq", &nlo::partonic::soft::qbq},
 	{"qg",  &NoContribution},
 	{"gq",  &NoContribution},
 	{"qbg", &NoContribution},
 	{"gqb", &NoContribution}
 };
-PartonicContribution sigma::next_to_leading_order::partonic::Virt = {
-	{"gg",  &sigma::next_to_leading_order::partonic::virt::gg},
-	{"qqb", &sigma::next_to_leading_order::partonic::virt::qqb},
-	{"qbq", &sigma::next_to_leading_order::partonic::virt::qbq},
+PartonicContribution nlo::partonic::Virt = {
+	{"gg",  &nlo::partonic::virt::gg},
+	{"qqb", &nlo::partonic::virt::qqb},
+	{"qbq", &nlo::partonic::virt::qbq},
 	{"qg",  &NoContribution},
 	{"gq",  &NoContribution},
 	{"qbg", &NoContribution},
 	{"gqb", &NoContribution}
 };
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_left_z = {
-	{"gg",  &sigma::next_to_leading_order::partonic::coll_left_z::gg},
-	{"qqb", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
-	{"qbq", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
-	{"qg",  &sigma::next_to_leading_order::partonic::coll_left_z::qg},
-	{"gq",  &sigma::next_to_leading_order::partonic::coll_right_z::qg},
-	{"qbg", &sigma::next_to_leading_order::partonic::coll_left_z::qg},
-	{"gqb", &sigma::next_to_leading_order::partonic::coll_right_z::qg}
+PartonicContribution nlo::partonic::Coll_left_z = {
+	{"gg",  &nlo::partonic::coll_left_z::gg},
+	{"qqb", &nlo::partonic::coll_left_z::qqb},
+	{"qbq", &nlo::partonic::coll_left_z::qqb},
+	{"qg",  &nlo::partonic::coll_left_z::qg},
+	{"gq",  &nlo::partonic::coll_right_z::qg},
+	{"qbg", &nlo::partonic::coll_left_z::qg},
+	{"gqb", &nlo::partonic::coll_right_z::qg}
 };
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_right_z = {
-	{"gg",  &sigma::next_to_leading_order::partonic::coll_left_z::gg},
-	{"qqb", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
-	{"qbq", &sigma::next_to_leading_order::partonic::coll_left_z::qqb},
-	{"qg",  &sigma::next_to_leading_order::partonic::coll_right_z::qg},
-	{"gq",  &sigma::next_to_leading_order::partonic::coll_left_z::qg},
-	{"qbg", &sigma::next_to_leading_order::partonic::coll_right_z::qg},
-	{"gqb", &sigma::next_to_leading_order::partonic::coll_left_z::qg}
+PartonicContribution nlo::partonic::Coll_right_z = {
+	{"gg",  &nlo::partonic::coll_left_z::gg},
+	{"qqb", &nlo::partonic::coll_left_z::qqb},
+	{"qbq", &nlo::partonic::coll_left_z::qqb},
+	{"qg",  &nlo::partonic::coll_right_z::qg},
+	{"gq",  &nlo::partonic::coll_left_z::qg},
+	{"qbg", &nlo::partonic::coll_right_z::qg},
+	{"gqb", &nlo::partonic::coll_left_z::qg}
 };
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_1 = {
-	{"gg",  &sigma::next_to_leading_order::partonic::coll_1::gg},
-	{"qqb", &sigma::next_to_leading_order::partonic::coll_1::qqb},
-	{"qbq", &sigma::next_to_leading_order::partonic::coll_1::qqb},
+PartonicContribution nlo::partonic::Coll_1 = {
+	{"gg",  &nlo::partonic::coll_1::gg},
+	{"qqb", &nlo::partonic::coll_1::qqb},
+	{"qbq", &nlo::partonic::coll_1::qqb},
 	{"qg",  &NoContribution},
 	{"gq",  &NoContribution},
 	{"qbg", &NoContribution},
 	{"gqb", &NoContribution}
 };
-PartonicContribution sigma::next_to_leading_order::partonic::Coll_0 = {
-	{"gg",  &sigma::next_to_leading_order::partonic::coll_0::gg},
-	{"qqb", &sigma::next_to_leading_order::partonic::coll_0::qqb},
-	{"qbq", &sigma::next_to_leading_order::partonic::coll_0::qqb},
+PartonicContribution nlo::partonic::Coll_0 = {
+	{"gg",  &nlo::partonic::coll_0::gg},
+	{"qqb", &nlo::partonic::coll_0::qqb},
+	{"qbq", &nlo::partonic::coll_0::qqb},
 	{"qg",  &NoContribution},
 	{"gq",  &NoContribution},
 	{"qbg", &NoContribution},
@@ -73,7 +73,7 @@ PartonicContribution sigma::next_to_leading_order::partonic::Coll_0 = {
 };
 
 
-double sigma::leading_order::Hadronic( std::map<std::string, double> var, double& wgt, Parameters &p, std::vector<Histogram*>* histograms) {
+double lo::Hadronic( std::map<std::string, double> var, double& wgt, Parameters *p, std::vector<Histogram*>* histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
 	if (PS.dGamma_ == 0) {
@@ -81,9 +81,9 @@ double sigma::leading_order::Hadronic( std::map<std::string, double> var, double
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	for (auto it = p.channels_.begin(); it != p.channels_.end(); ++it) {
+	for (auto it = p->channels_.begin(); it != p->channels_.end(); ++it) {
 		std::string channel = *it;
-		res += p.Fs[channel](x1, x2) * sigma::leading_order::partonic::Born[channel]( PS, p );
+		res += p->Fs[channel](x1, x2) * lo::partonic::Born[channel]( PS, p );
 	}
 	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
 		(*it)->Fill(PS, res * wgt);
@@ -91,7 +91,7 @@ double sigma::leading_order::Hadronic( std::map<std::string, double> var, double
 	return res;
 }
 
-double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var, double& wgt, Parameters& p, std::vector<Histogram*>* histograms) {
+double nlo::Hadronic2(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
 	if (PS.dGamma_ == 0) {
@@ -99,8 +99,14 @@ double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	for (auto ij = p.channels_.begin(); ij != p.channels_.end(); ++ij) {
-		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Hard[*ij](PS, p);
+	double z = PS.z_;
+	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
+		res += p->Fs[*ij](x1, x2) * ( nlo::partonic::Soft[*ij](PS, p)
+								    + nlo::partonic::Virt[*ij](PS, p)
+			                        + nlo::partonic::Coll_0[*ij](PS, p)
+			                        + nlo::partonic::Coll_1[*ij](PS, p));
+		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p);
+		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p);
 	}
 	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
 		(*it)->Fill(PS, res * wgt);
@@ -108,7 +114,7 @@ double sigma::next_to_leading_order::Hadronic2(std::map<std::string, double> var
 	return res;
 }
 
-double sigma::next_to_leading_order::Hadronic3(std::map<std::string, double> var, double& wgt, Parameters& p, std::vector<Histogram*>* histograms) {
+double nlo::Hadronic3(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
 	if (PS.dGamma_ == 0) {
@@ -116,51 +122,51 @@ double sigma::next_to_leading_order::Hadronic3(std::map<std::string, double> var
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	for (auto ij = p.channels_.begin(); ij != p.channels_.end(); ++ij) {
-		res += p.Fs[*ij](x1, x2) * sigma::next_to_leading_order::partonic::Hard[*ij](PS, p);
+	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
+		res += p->Fs[*ij](x1, x2) * nlo::partonic::Hard[*ij](PS, p);
 	}
 	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
 		(*it)->Fill(PS, res * wgt);
 	}
 	return res;
 }
-double sigma::leading_order::partonic::gg(PhaseSpaceGenerator PS, Parameters & p) {
+double lo::partonic::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s	  = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup   = p.GetSquaredGs();
+	double coup   = p->GetSquaredGs();
 	double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 	
 	return result;
 }
 
-double sigma::leading_order::partonic::qqb(PhaseSpaceGenerator PS, Parameters & p) {
+double lo::partonic::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s      = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup   = p.GetSquaredGs();
+	double coup   = p->GetSquaredGs();
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::leading_order::partonic::qbq(PhaseSpaceGenerator PS, Parameters & p) {
+double lo::partonic::qbq(PhaseSpaceGenerator PS, Parameters * p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * suub_ttb_(PS.p2_, PS.p1_, PS.k1_, PS.k2_) * kPbarn;
 	//std::cout << result << std::endl;
 	return result;
 }
 
-double NoContribution(PhaseSpaceGenerator, Parameters & p) { return 0.0; }
+double NoContribution(PhaseSpaceGenerator, Parameters * p) { return 0.0; }
 
-double sigma::next_to_leading_order::partonic::soft::gg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::soft::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
 	double dGamma = PS.dGamma_;
 //	double coup = p.GetSquaredGs();
-	double m = p.GetTopQuarkMass();
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double m = p->GetTopQuarkMass();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 	double m2 = m * m;
 	double beta = (x2 - x1) / (x1 + x2);
 	double gamma = 1.0 / std::sqrt(1.0 - beta * beta);
@@ -218,16 +224,16 @@ double sigma::next_to_leading_order::partonic::soft::gg(PhaseSpaceGenerator PS, 
 	return 1.0 / 2.0 / s * dGamma * softGG.eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::soft::qqb(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::soft::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
-	double m = p.GetTopQuarkMass();
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double coup = p->GetSquaredGs();
+	double m = p->GetTopQuarkMass();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 	double m2 = m * m;
 	double beta = (x2 - x1) / (x1 + x2);
 	double gamma = 1.0 / std::sqrt(1.0 - beta * beta);
@@ -265,16 +271,16 @@ double sigma::next_to_leading_order::partonic::soft::qqb(PhaseSpaceGenerator PS,
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * result.eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::soft::qbq(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::soft::qbq(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
-	double m = p.GetTopQuarkMass();
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double coup = p->GetSquaredGs();
+	double m = p->GetTopQuarkMass();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 	double m2 = m * m;
 	double beta = (x2 - x1) / (x1 + x2);
 	double gamma = 1.0 / std::sqrt(1.0 - beta * beta);
@@ -313,13 +319,13 @@ double sigma::next_to_leading_order::partonic::soft::qbq(PhaseSpaceGenerator PS,
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * result.eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::virt::gg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::virt::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double alpha_s = p.GetAlphaS();
+	double alpha_s = p->GetAlphaS();
 	divTerm cGamma = { 0.0, 0.0, 1.0, 0.0, 0.0 };
 	std::complex<double> amp[3];
-	double mur2 = p.GetSquaredRenormalizationScale();
+	double mur2 = p->GetSquaredRenormalizationScale();
 	double p1[4] = { PS.p1_[0], PS.p1_[1], PS.p1_[2], PS.p1_[3] };
 	double p2[4] = { PS.p2_[0], PS.p2_[1], PS.p2_[2], PS.p2_[3] };
 	double k1[4] = { PS.k1_[0], PS.k1_[1], PS.k1_[2], PS.k1_[3] };
@@ -330,41 +336,41 @@ double sigma::next_to_leading_order::partonic::virt::gg(PhaseSpaceGenerator PS, 
 	return 1.0 / 2.0 / s * dGamma * result.eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::virt::qqb(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::virt::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetAlphaS();
+	double coup = p->GetAlphaS();
 	divTerm cGamma = { 0.0, 0.0, std::pow(coup, 3), 0.0, 0.0 };
 	std::complex<double> amp[3];
-	double mur2 = p.GetSquaredRenormalizationScale();
+	double mur2 = p->GetSquaredRenormalizationScale();
 	bsyqqttsq_(PS.p2_, PS.p1_, PS.k1_, PS.k2_, &mur2, amp);
 	divTerm result = cGamma * 4.0 * M_PI
 		* (divTerm) { amp[0].real(), amp[1].real(), amp[2].real(), 0.0, 0.0 };
 	return 1.0 / 2.0 / s * dGamma * result.eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::virt::qbq(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::virt::qbq(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetAlphaS();
+	double coup = p->GetAlphaS();
 	divTerm cGamma = { 0.0, 0.0, std::pow(coup, 3), 0.0, 0.0 };
 	complex<double> amp[3];
-	double mur2 = p.GetSquaredRenormalizationScale();
+	double mur2 = p->GetSquaredRenormalizationScale();
 	bsyqqttsq_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, &mur2, amp);
 	divTerm result = cGamma * 4.0 * M_PI
 		* (divTerm) { amp[0].real(), amp[1].real(), amp[2].real(), 0.0, 0.0 };
 	return 1.0 / 2.0 / s * dGamma * result.eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_left_z::gg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_left_z::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double z = PS.z_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double coup = p->GetSquaredGs();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 
 	double Feps = 2.0 * mur2 / s / xmin * z;
 	double Ceps = mur2 / muf2;
@@ -373,16 +379,16 @@ double sigma::next_to_leading_order::partonic::coll_left_z::gg(PhaseSpaceGenerat
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * result * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_left_z::qqb(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_left_z::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double z = PS.z_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 	double Ceps = mur2 / muf2;
 	double Feps = 2.0 * mur2 / s / xmin * z;
 	double z2 = z * z;
@@ -391,16 +397,16 @@ double sigma::next_to_leading_order::partonic::coll_left_z::qqb(PhaseSpaceGenera
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * CF * result * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_left_z::qg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_left_z::qg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double z = PS.z_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 	double gg = sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_);
 	divTerm Feps = { 0.0, 0.0, 1.0, ln(2.0 * mur2 / s / xmin / std::pow(1 - z,2) * z), 0.0 };
 	divTerm result = -alpha_s / 2.0 / M_PI * Feps.qEps() *
@@ -414,16 +420,16 @@ double sigma::next_to_leading_order::partonic::coll_left_z::qg(PhaseSpaceGenerat
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * (result + resultC).eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_right_z::qg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_right_z::qg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double z = PS.z_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 	double qq = suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_);
 
 	divTerm Feps = { 0.0, 0.0, 1.0, ln(2.0 * mur2 / s / xmin / std::pow(1 - z,2) * z), 0.0 };
@@ -438,35 +444,35 @@ double sigma::next_to_leading_order::partonic::coll_right_z::qg(PhaseSpaceGenera
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * (result + resultC).eps0 * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_1::gg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_1::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double z = PS.z_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
 	double Feps = 2.0 * mur2 / s / xmin;
 	double Ceps = mur2 / muf2;
-	double m2 = std::pow(p.GetTopQuarkMass(), 2);
+	double m2 = std::pow(p->GetTopQuarkMass(), 2);
 	double x = 4.0 * m2 / s;
 	double result = z > x ? 2 * Nc * (ln(Ceps) - ln(Feps) + 2 * ln(1 - z)) / (-1 + z) : 0.0;
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * result * 2 * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_1::qqb(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_1::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double z = PS.z_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
-	double m2 = std::pow(p.GetTopQuarkMass(), 2);
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
+	double m2 = std::pow(p->GetTopQuarkMass(), 2);
 	double Ceps = mur2 / muf2;
 	double Feps = 2.0 * mur2 / s / xmin;
 	double x = 4.0 * m2 / s;
@@ -474,15 +480,15 @@ double sigma::next_to_leading_order::partonic::coll_1::qqb(PhaseSpaceGenerator P
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * CF * result * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_0::gg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_0::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
-	double m2 = std::pow(p.GetTopQuarkMass(), 2);
+	double coup = p->GetSquaredGs();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
+	double m2 = std::pow(p->GetTopQuarkMass(), 2);
 	double Feps = 2.0 * mur2 / s / xmin;
 	double Ceps = mur2 / muf2;
 
@@ -493,15 +499,15 @@ double sigma::next_to_leading_order::partonic::coll_0::gg(PhaseSpaceGenerator PS
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * result.eps0 * 2 * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::coll_0::qqb(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::coll_0::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
-	double mur2 = p.GetSquaredRenormalizationScale();
-	double muf2 = p.GetSquaredFactorizationScale();
-	double xmin = p.GetCutParameter();
-	double alpha_s = p.GetAlphaS();
-	double m2 = std::pow(p.GetTopQuarkMass(), 2);
+	double coup = p->GetSquaredGs();
+	double mur2 = p->GetSquaredRenormalizationScale();
+	double muf2 = p->GetSquaredFactorizationScale();
+	double xmin = p->GetCutParameter();
+	double alpha_s = p->GetAlphaS();
+	double m2 = std::pow(p->GetTopQuarkMass(), 2);
 	double Ceps = mur2 / muf2;
 	double Feps = 2.0 * mur2 / s / xmin;
 	double x = 4.0 * m2 / s;
@@ -510,10 +516,10 @@ double sigma::next_to_leading_order::partonic::coll_0::qqb(PhaseSpaceGenerator P
 	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s/2.0 / M_PI * CF * result.eps0 * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
-double sigma::next_to_leading_order::partonic::hard::gg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::hard::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	if (PS.not_soft_ && PS.not_collinear_) {
 		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sgg_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
@@ -528,10 +534,10 @@ double sigma::next_to_leading_order::partonic::hard::gg(PhaseSpaceGenerator PS, 
 	}
 }
 
-double sigma::next_to_leading_order::partonic::hard::qqb(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::hard::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	if (PS.not_soft_ && PS.not_collinear_) {
 		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * suub_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
@@ -546,10 +552,10 @@ double sigma::next_to_leading_order::partonic::hard::qqb(PhaseSpaceGenerator PS,
 	}
 }
 
-double sigma::next_to_leading_order::partonic::hard::qbq(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::hard::qbq(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	if (PS.not_soft_ && PS.not_collinear_) {
 		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * subu_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
@@ -564,10 +570,10 @@ double sigma::next_to_leading_order::partonic::hard::qbq(PhaseSpaceGenerator PS,
 	}
 }
 
-double sigma::next_to_leading_order::partonic::hard::qg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::hard::qg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
 		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sug_ttbu_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
@@ -582,10 +588,10 @@ double sigma::next_to_leading_order::partonic::hard::qg(PhaseSpaceGenerator PS, 
 	}
 }
 
-double sigma::next_to_leading_order::partonic::hard::qbg(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::hard::qbg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
 		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * subg_ttbub_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
@@ -600,10 +606,10 @@ double sigma::next_to_leading_order::partonic::hard::qbg(PhaseSpaceGenerator PS,
 	}
 }
 
-double sigma::next_to_leading_order::partonic::hard::gq(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::hard::gq(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
 		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sgu_ttbu_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
@@ -618,10 +624,10 @@ double sigma::next_to_leading_order::partonic::hard::gq(PhaseSpaceGenerator PS, 
 	}
 }
 
-double sigma::next_to_leading_order::partonic::hard::gqb(PhaseSpaceGenerator PS, Parameters& p) {
+double nlo::partonic::hard::gqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
-	double coup = p.GetSquaredGs();
+	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
 		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sgub_ttbub_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {

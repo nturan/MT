@@ -14,7 +14,7 @@
 
 
 Histogram::Histogram(std::string name, std::pair<double, double> limits, unsigned int number_of_bins,
-	ParameterFunction parameter, std::vector<std::string> particles, Parameters& p) {
+	ParameterFunction parameter, std::vector<std::string> particles, Parameters* p) {
 	name_ = name;
 	limits_ = limits;
 	number_of_bins_ = number_of_bins;
@@ -39,18 +39,18 @@ Histogram::Histogram(std::string name, std::pair<double, double> limits, unsigne
 
 	parameter_ = parameter;
 	particles_ = particles;
-	ecms_ = p.GetColliderEnergy();
-	mur_ = std::sqrt(p.GetSquaredRenormalizationScale());
-	muf_ = std::sqrt(p.GetSquaredFactorizationScale());
-	m_ = p.GetTopQuarkMass();
-	pdf_name_ = p.GetPdfName();
+	ecms_ = p->GetColliderEnergy();
+	mur_ = std::sqrt(p->GetSquaredRenormalizationScale());
+	muf_ = std::sqrt(p->GetSquaredFactorizationScale());
+	m_ = p->GetTopQuarkMass();
+	pdf_name_ = p->GetPdfName();
 }
 
 Histogram::~Histogram(){
 	std::cout << "Histogram: " << name_ << " deleted" << std::endl;
 }
 
-Histogram::Histogram(std::string initialization_string, Parameters& p) {
+Histogram::Histogram(std::string initialization_string, Parameters* p) {
 
 	std::string s;
 	unsigned int left = initialization_string.find("(") + 1;
@@ -94,11 +94,11 @@ Histogram::Histogram(std::string initialization_string, Parameters& p) {
 	name_ = parameter_string;
 	parameter_ = parameters_[parameter_string];
 //	parameter_ = &calcInvariantMass;
-	ecms_ = p.GetColliderEnergy();
-	mur_ = std::sqrt(p.GetSquaredRenormalizationScale());
-	muf_ = std::sqrt(p.GetSquaredFactorizationScale());
-	m_ = p.GetTopQuarkMass();
-	pdf_name_ = p.GetPdfName();
+	ecms_ = p->GetColliderEnergy();
+	mur_ = std::sqrt(p->GetSquaredRenormalizationScale());
+	muf_ = std::sqrt(p->GetSquaredFactorizationScale());
+	m_ = p->GetTopQuarkMass();
+	pdf_name_ = p->GetPdfName();
 }
 
 void Histogram::Fill(PhaseSpaceGenerator PS, double weight){

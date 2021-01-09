@@ -73,7 +73,6 @@ double Integral::f(double x[],double wgt, double res[]) {
   int number_of_calls = integrator_->getcalls();
   double weight = wgt / number_of_calls / iterations_;
   for ( auto it = integrands_.begin(); it != integrands_.end(); ++it ) {
-      //std::cout << weight << std::endl;
       res[i] = it->second(variables, weight) * jac;
       ++i;
   }

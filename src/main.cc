@@ -41,46 +41,42 @@ int main( int argc, char* argv[] ) {
 	std::vector<std::string> po = result["po"].as<std::vector<std::string>>();
 	std::vector<std::string> channels = result["ch"].as<std::vector<std::string>>();
 	std::string pdf_name = result["pdf"].as<std::string>();
-	std::map<std::string, Parameters> parameters;
-	std::map<std::string, std::vector<Histogram*>*> histograms;
+	std::map<std::string, Parameters*> parameter_sets;
+	std::map<std::string, std::vector<Histogram*>*> histogram_sets;
+	std::vector<std::string> histogram_strings = {
+		"M(top atop) 50 300.0 1000.0" };/* ,
+		"PT(top) 50 0.0 500.0",
+		"PT(atop) 50 0.0 500.0",
+		"Y(top) 50 -5.0 5.0",
+		"E(top) 50 0.0 1000.0",
+		"PHI(top) 50 -4.0 4.0",
+		"ETA(top) 50 -10.0 10.0",
+		"ETA(atop) 50 -10.0 10.0" };*/
 
 
 
-
+	/* Initializing extern libraries */
 	const int Nf = NF - 1;
 	// const int FDH = 0;  /* Four-Dimensional-Helicity scheme                    */
 	const int HV_CDR = 1;  /* 't Hooft-Veltman scheme                           */
 	bsyppttinit_(&m, &Nf, &HV_CDR);
-
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = m;
-	
-
-	//for (auto it = parameters.begin(); it != parameters.end(); ++it) {
-	//	histograms[it->first] = std::vector<Histogram>{
-	//		Histogram("M(top atop) 50 300.0 1000.0", it->second),
-	//		Histogram("PT(top) 50 0.0 500.0", it->second),
-	//		Histogram("PT(atop) 50 0.0 500.0", it->second),
-	//		Histogram("Y(top) 50 -5.0 5.0", it->second),
-	//		Histogram("E(top) 50 0.0 1000.0", it->second),
-	//		Histogram("PHI(top) 50 -4.0 4.0", it->second),
-	//		Histogram("ETA(top) 50 -10.0 10.0", it->second),
-	//		Histogram("ETA(atop) 50 -10.0 10.0", it->second) };
-	//}
-
-
-
-	unsigned int iseed = 3720758;
+	unsigned int iseed = 3720758; // I can also take the cpu time here.
 	const int lxlev = 1;
 	rlxd_init(lxlev, iseed);
-	std::map<std::string, std::pair<double, double>> leading_order_variables{
+	
+
+
+
+	std::map<std::string, std::pair<double, double>> lo_variables{
 		{"E1",     std::make_pair(m, ecms/2.0)},
 		{"phi1",   std::make_pair(-M_PI, M_PI)},
 		{"theta1", std::make_pair(0.0, M_PI)},
 		{"theta2", std::make_pair(0.0, M_PI)}
 	};
 
-	std::map<std::string, std::pair<double, double>> next_to_leading_order_twobody_variables{
+	std::map<std::string, std::pair<double, double>> nlo_2_variables{
 		{"E1",     std::make_pair(m, ecms / 2.0)},
 		{"phi1",   std::make_pair(-M_PI, M_PI)},
 		{"theta1", std::make_pair(0.0, M_PI)},
@@ -88,7 +84,7 @@ int main( int argc, char* argv[] ) {
 		{"z",      std::make_pair(0.0,1.0)}
 	};
 
-	std::map<std::string, std::pair<double, double>> next_to_leading_order_threebody_variables{
+	std::map<std::string, std::pair<double, double>> nlo_3_variables{
 		{"E1",     std::make_pair(m, ecms / 2.0)},
 		{"phi1",   std::make_pair(-M_PI, M_PI)},
 		{"theta1", std::make_pair(0.0, M_PI)},
@@ -99,67 +95,74 @@ int main( int argc, char* argv[] ) {
 	};
 
 
-	std::map<std::string, Integrand> 
-		leading_order_integrands, 
-		next_to_leading_order_twobody_integrands, 
-		next_to_leading_order_threebody_integrands;
+	std::map<std::string, Integrand> lo_integrands, nlo_2_integrands, nlo_3_integrands;
 
 
 	using namespace std::placeholders;
 	//std::bind always copies the argument.  to force it pass by reference i used std::ref
-	
+	parameter_sets.insert(
+		{"scale=1.0", new Parameters (pdf_name, ecms, mur, muf, m, xmin, channels) });
+	if (scale_is_dynamic) {
+		parameter_sets.insert(
+			{ "scale=2.0", new Parameters(pdf_name, ecms, 2.0*mur, 2.0*muf, m, xmin, channels) });
+		parameter_sets.insert(
+			{ "scale=0.5", new Parameters(pdf_name, ecms, 0.5*mur, 0.5*muf, m, xmin, channels) });
+	}
 
-	Parameters p1(pdf_name, ecms, mur, muf, m, xmin, channels);
-	Parameters p2(pdf_name, ecms, 2*mur, 2*muf, m, xmin, channels);
-	Parameters p3(pdf_name, ecms, 0.5 * mur, 0.5 * muf, m, xmin, channels);
-
-
-	parameters.insert(std::pair<std::string, Parameters>("one", p1));
-	parameters.insert(std::pair<std::string, Parameters>("two", p2));
-	parameters.insert(std::pair<std::string, Parameters>("three", p3));
-
-	for (auto it = parameters.begin(); it != parameters.end(); ++it) {
+	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
 
 		std::vector<Histogram*> *hists = new std::vector<Histogram*>();
-		hists->push_back(new Histogram("M(top atop) 50 300.0 1000.0", it->second));
-		hists->push_back(new Histogram("PT(top) 50 0.0 500.0", it->second));
+		for (auto ij = histogram_strings.begin(); ij != histogram_strings.end(); ++ij) {
+			hists->push_back(new Histogram(*ij, it->second));
+		}
 
-		histograms.insert(std::pair<std::string, std::vector<Histogram*>*>(it->first, hists));
-		leading_order_integrands[it->first] = std::bind(&sigma::leading_order::Hadronic, _1, _2, std::ref(it->second), hists);
-		next_to_leading_order_twobody_integrands[it->first] = std::bind(&sigma::next_to_leading_order::Hadronic2, _1, _2, std::ref(it->second), hists);
-		next_to_leading_order_threebody_integrands[it->first] = std::bind(&sigma::next_to_leading_order::Hadronic3, _1, _2, std::ref(it->second), hists);
+		histogram_sets.insert({ it->first, hists });
+		lo_integrands[it->first]    = std::bind(&lo::Hadronic, _1, _2,   it->second, hists);
+		nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2, _1, _2, it->second, hists);
+		nlo_3_integrands[it->first] = std::bind(&nlo::Hadronic3, _1, _2, it->second, hists);
 	}
 	
 
-	std::map<std::string, std::vector<Integral*>> integrals;
-	Integral *leading_order_integral = new Integral(leading_order_variables, leading_order_integrands);
-	Integral *next_to_leading_order_twobody_integral = new Integral(next_to_leading_order_twobody_variables, next_to_leading_order_twobody_integrands);
-	Integral *next_to_leading_order_threebody_integral = new Integral(next_to_leading_order_threebody_variables, next_to_leading_order_threebody_integrands);
-
-	integrals.insert(std::pair<std::string, std::vector<Integral*>>("lo",  std::vector<Integral*>{ leading_order_integral }));
-	integrals.insert(std::pair<std::string, std::vector<Integral*>>("nlo", std::vector<Integral*>{ next_to_leading_order_twobody_integral,
-		                                                                                           next_to_leading_order_threebody_integral}));
+	std::map<std::string, std::vector<Integral*>*> integrals = { 
+		{"lo",  new std::vector<Integral*>{ new Integral(lo_variables,    lo_integrands) }},
+		{"nlo", new std::vector<Integral*>{ new Integral(nlo_2_variables, nlo_2_integrands),
+	                                        new Integral(nlo_3_variables, nlo_3_integrands)}}
+};
 
 	for (auto it = po.begin(); it != po.end(); ++it) {
-		for (auto ij = integrals.find(*it)->second.begin(); ij != integrals.find(*it)->second.end(); ++ij) {
+		for (auto ij = integrals.find(*it)->second->begin(); ij != integrals.find(*it)->second->end(); ++ij) {
 			(*ij)->ExecuteVegas(1, 10, 1000, 1);
 		}
 	}
 
-	for (auto it = histograms.begin(); it != histograms.end(); ++it) {
+	for (auto it = histogram_sets.begin(); it != histogram_sets.end(); ++it) {
 		std::cout << "Histogram for parameter set: " << it->first << std::endl;
 		for (auto ij = it->second->begin(); ij != it->second->end(); ++ij) {
 			(*ij)->Print();
+		}
+	}
+
+	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
+		delete it->second;
+	}
+    parameter_sets.clear();
+	for (auto it = histogram_sets.begin(); it != histogram_sets.end(); ++it) {
+		for (auto ij = it->second->begin(); ij != it->second->end(); ++ij) {
 			delete *ij;
 		}
 		it->second->clear();
 		delete it->second;
 	}
-	parameters.clear();
-	histograms.clear();
-	delete leading_order_integral;
-	delete next_to_leading_order_twobody_integral;
-	delete next_to_leading_order_threebody_integral;
+	histogram_sets.clear();
+
+	for (auto it = integrals.begin(); it != integrals.end(); ++it) {
+		for (auto ij = it->second->begin(); ij != it->second->end(); ++ij) {
+			delete *ij;
+		}
+		it->second->clear();
+		delete it->second;
+	}
+	integrals.clear();
 
 	return 0;
 }
