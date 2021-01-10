@@ -13,9 +13,9 @@ class Integral{
 public:
   Integral( std::map<std::string, std::pair<double, double>>, std::map<std::string, Integrand> integrands );
   ~Integral();
-  double ExecuteVegas( int entry, int itmx, int ncall, int nprn=0 );
+  void ExecuteVegas( int entry, int itmx, int ncall, int nprn=0 );
     
-  std::map<std::string, double> integral_, error_, chi2a_;
+  std::map<std::string, std::tuple<double, double, double>> results_;
   std::map<std::string, Integrand> integrands_;
 
 protected:

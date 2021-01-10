@@ -23,6 +23,9 @@ int main( int argc, char* argv[] ) {
 		("po", "Perturbation order", cxxopts::value<std::vector<std::string>>()->default_value("lo"))
 		("ch", "Parton channels", cxxopts::value<std::vector<std::string>>()->default_value("all"))
 		("pdf", "LHAPDF set name", cxxopts::value<std::string>()->default_value("CT10nlo"))
+		("histogram", "Histogram creation strings", cxxopts::value<std::vector<std::string>>()->default_value(""))
+		("calls", "Number of calls to integrand", cxxopts::value<int>()->default_value("100000"))
+		("iterations", "Number of vegas iterations", cxxopts::value<int>()->default_value("10"))
 		("h,help", "Print usage")
 		;
 	auto result = options.parse(argc, argv);
@@ -38,20 +41,14 @@ int main( int argc, char* argv[] ) {
 	double muf = result["muf"].as<double>();
 	bool scale_is_dynamic = result["dynamic_scale"].as<bool>();
 	double xmin = result["xmin"].as<double>();
+	int calls = result["calls"].as<int>();
+	int iterations = result["iterations"].as<int>();
 	std::vector<std::string> po = result["po"].as<std::vector<std::string>>();
 	std::vector<std::string> channels = result["ch"].as<std::vector<std::string>>();
 	std::string pdf_name = result["pdf"].as<std::string>();
+	std::vector<std::string> histogram_strings = result["histogram"].as<std::vector<std::string>>();
 	std::map<std::string, Parameters*> parameter_sets;
 	std::map<std::string, std::vector<Histogram*>*> histogram_sets;
-	std::vector<std::string> histogram_strings = {
-		"M(top atop) 50 300.0 1000.0" };/* ,
-		"PT(top) 50 0.0 500.0",
-		"PT(atop) 50 0.0 500.0",
-		"Y(top) 50 -5.0 5.0",
-		"E(top) 50 0.0 1000.0",
-		"PHI(top) 50 -4.0 4.0",
-		"ETA(top) 50 -10.0 10.0",
-		"ETA(atop) 50 -10.0 10.0" };*/
 
 
 
@@ -130,13 +127,32 @@ int main( int argc, char* argv[] ) {
 };
 
 	for (auto it = po.begin(); it != po.end(); ++it) {
+		std::map<std::string, std::tuple<double, double, double>> results;
 		for (auto ij = integrals.find(*it)->second->begin(); ij != integrals.find(*it)->second->end(); ++ij) {
-			(*ij)->ExecuteVegas(1, 10, 1000, 1);
+			(*ij)->ExecuteVegas(1, 30, 10000, 1);
+			(*ij)->ExecuteVegas(2, iterations, calls, 1);
+			for (auto ik = (*ij)->results_.begin(); ik != (*ij)->results_.end(); ++ik) {
+				double val_new, err_new, chi_new;
+				double val_old, err_old, chi_old;
+				std::tie(val_new, err_new, chi_new) = ik->second;
+				std::tie(val_old, err_old, chi_old) = results[ik->first];
+				val_old = val_old + val_new;
+				err_old = std::sqrt( err_old*err_old + err_new*err_new );
+				chi_old = (chi_old != 0 ? 0.5 : 1.0) * (chi_old + chi_new);
+				results[ik->first] = std::make_tuple(val_old, err_old, chi_old);
+			}
+		}
+		for (auto ij = results.begin(); ij != results.end(); ++ij) {
+			double val, err, chi;
+			std::tie(val, err, chi) = ij->second;
+			std::cout << "Results for " << *it << " with " << ij->first << ": " 
+				<< val << " +/- " << err
+				<< " with chi2 = " << chi << std::endl;
 		}
 	}
 
 	for (auto it = histogram_sets.begin(); it != histogram_sets.end(); ++it) {
-		std::cout << "Histogram for parameter set: " << it->first << std::endl;
+		std::cout << "Histograms for parameter set: " << it->first << std::endl;
 		for (auto ij = it->second->begin(); ij != it->second->end(); ++ij) {
 			(*ij)->Print();
 		}

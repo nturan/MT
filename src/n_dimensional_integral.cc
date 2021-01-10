@@ -14,7 +14,8 @@ Integral::~Integral()
     std::cout << "integrator is deleted" << std::endl;
 }
 
-double Integral::ExecuteVegas(int entry, int itmx, int ncall,int nprn) {
+void Integral::ExecuteVegas(
+    int entry, int itmx, int ncall,int nprn) {
 
   iterations_ += itmx;
   calls_=ncall;
@@ -40,14 +41,11 @@ double Integral::ExecuteVegas(int entry, int itmx, int ncall,int nprn) {
    int i = 0;
    for ( auto it = integrands_.begin(); it != integrands_.end(); ++it ) {
      std::string name = it->first;
-    integral_[name] = integrator_->avgi_[i];
-    error_[name] = integrator_->sd_[i];
-    chi2a_[name] = integrator_->chi2a_[i];
-    ++i;
+     results_[name] = std::make_tuple(integrator_->avgi_[i],
+                                      integrator_->sd_[i],
+                                      integrator_->chi2a_[i]);
+     ++i;
   }                    
-
-  
-  return integrator_->avgi;
 }
 
 
