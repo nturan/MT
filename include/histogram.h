@@ -43,5 +43,6 @@ public:
 	~Histogram();
 	void Fill(PhaseSpaceGenerator PS, double weight);
 	void Print();
+	void Clear();
 
 };

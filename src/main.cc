@@ -92,7 +92,8 @@ int main( int argc, char* argv[] ) {
 	};
 
 
-	std::map<std::string, Integrand> lo_integrands, nlo_2_integrands, nlo_3_integrands;
+	std::map<std::string, Integrand> lo_integrands, lo_nlo_2_integrands, 
+		nlo_2_integrands, nlo_3_integrands;
 
 
 	using namespace std::placeholders;
@@ -114,17 +115,19 @@ int main( int argc, char* argv[] ) {
 		}
 
 		histogram_sets.insert({ it->first, hists });
-		lo_integrands[it->first]    = std::bind(&lo::Hadronic, _1, _2,   it->second, hists);
-		nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2, _1, _2, it->second, hists);
-		nlo_3_integrands[it->first] = std::bind(&nlo::Hadronic3, _1, _2, it->second, hists);
+		lo_integrands[it->first]       = std::bind(&lo::Hadronic,           _1, _2, it->second, hists);
+		lo_nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2WithBorn, _1, _2, it->second, hists);
+		nlo_2_integrands[it->first]    = std::bind(&nlo::Hadronic2,         _1, _2, it->second, hists);
+		nlo_3_integrands[it->first]    = std::bind(&nlo::Hadronic3,         _1, _2, it->second, hists);
 	}
 	
 
 	std::map<std::string, std::vector<Integral*>*> integrals = { 
 		{"lo",  new std::vector<Integral*>{ new Integral(lo_variables,    lo_integrands) }},
 		{"nlo", new std::vector<Integral*>{ new Integral(nlo_2_variables, nlo_2_integrands),
-	                                        new Integral(nlo_3_variables, nlo_3_integrands)}}
-};
+											new Integral(nlo_3_variables, nlo_3_integrands)}},
+		{"lo+nlo", new std::vector<Integral*>{ new Integral(nlo_2_variables, lo_nlo_2_integrands),
+			                                   new Integral(nlo_3_variables, nlo_3_integrands)}}};
 
 	for (auto it = po.begin(); it != po.end(); ++it) {
 		std::map<std::string, std::tuple<double, double, double>> results;
@@ -145,18 +148,19 @@ int main( int argc, char* argv[] ) {
 		for (auto ij = results.begin(); ij != results.end(); ++ij) {
 			double val, err, chi;
 			std::tie(val, err, chi) = ij->second;
-			std::cout << "Results for " << *it << " with " << ij->first << ": " 
+			std::cout << "#RESULTS for " << *it << " with " << ij->first << ": " 
 				<< val << " +/- " << err
 				<< " with chi2 = " << chi << std::endl;
+			std::cout << "Histograms for parameter set: " << ij->first << std::endl;
+			for (auto ik  = histogram_sets.find(ij->first)->second->begin(); 
+				      ik != histogram_sets.find(ij->first)->second->end(); ++ik) {
+				(*ik)->Print();
+				(*ik)->Clear();
+			}
 		}
 	}
 
-	for (auto it = histogram_sets.begin(); it != histogram_sets.end(); ++it) {
-		std::cout << "Histograms for parameter set: " << it->first << std::endl;
-		for (auto ij = it->second->begin(); ij != it->second->end(); ++ij) {
-			(*ij)->Print();
-		}
-	}
+	
 
 	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
 		delete it->second;

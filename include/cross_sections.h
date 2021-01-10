@@ -25,7 +25,7 @@ namespace lo {
 }
 
 namespace nlo {
-	HadronicCrossSection Hadronic2, Hadronic3;
+	HadronicCrossSection Hadronic2WithBorn, Hadronic2, Hadronic3;
 	namespace partonic {
 		extern PartonicContribution Hard, Soft, Virt, Coll_left_z, Coll_right_z, Coll_1, Coll_0;
 		namespace hard {

@@ -154,3 +154,19 @@ void Histogram::Print(){
 	std::cout << "OVERFLOW: " << overflow_.n << " " << overflow_.v << " " << std::sqrt(overflow_.e2) << std::endl;
 	std::cout << "#END: HISTOGRAM" << std::endl;
 }
+
+void Histogram::Clear(){
+	underflow_.n = 0;
+	underflow_.v = 0;
+	underflow_.e2 = 0;
+
+	overflow_.n = 0;
+	overflow_.v = 0;
+	overflow_.e2 = 0;
+
+	for (auto i = data_.begin(); i != data_.end(); ++i) {
+		i->n = 0;
+		i->v = 0;
+		i->e2 = 0;
+	}
+}

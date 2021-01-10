@@ -91,6 +91,31 @@ double lo::Hadronic( std::map<std::string, double> var, double& wgt, Parameters 
 	return res;
 }
 
+double nlo::Hadronic2WithBorn(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+	if (PS.dGamma_ == 0) {
+		return 0.0;
+	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	double z = PS.z_;
+	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
+		res += p->Fs[*ij](x1, x2) * (
+			  lo::partonic::Born[*ij](PS, p)
+			+ nlo::partonic::Soft[*ij](PS, p)
+			+ nlo::partonic::Virt[*ij](PS, p)
+			+ nlo::partonic::Coll_0[*ij](PS, p)
+			+ nlo::partonic::Coll_1[*ij](PS, p));
+		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p);
+		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p);
+	}
+	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
+		(*it)->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
 double nlo::Hadronic2(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
