@@ -5,8 +5,8 @@ cmake_minimum_required (VERSION 3.8)
 
 enable_language(Fortran)
 set(CMAKE_CXX_STANDARD 17)
-
 set(MT "ttbar_NLO")
+include(ExternalProject)
 
 project (${MT})
 
@@ -16,9 +16,9 @@ add_subdirectory("libs/virtual")
 add_subdirectory("libs/amps")
 add_subdirectory("libs/ranlux-3.3")
 
-link_directories("/home/turan/src/helas204/")
-link_directories("/home/turan/src/QCDLoop/ql")
-link_directories("/home/turan/src/QCDLoop/ff")
+link_directories("libs/helas204/")
+link_directories("libs/QCDLoop/ql")
+link_directories("libs/QCDLoop/ff")
 link_directories("/users/local/lhapdf/lib64")
 
 
@@ -34,6 +34,9 @@ add_executable (${MT} "src/main.cc"
                       "src/event_generator.cc" 
                       "src/matrix_element_method.cc")
 
+
+
+include(libs/helas204/helas.cmake)
 target_link_libraries(${MT} virtualAmps)
 target_link_libraries(${MT} amps)
 target_link_libraries(${MT} ranlux)

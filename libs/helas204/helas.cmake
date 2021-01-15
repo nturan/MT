@@ -1,0 +1,12 @@
+set(HELAS_PREFIX helas204)
+set(HELAS_URL libs/helas204)
+set(HELAS_MAKE make)
+
+#${HELAS_MAKE} -I objs/x86_64/gnu/
+ExternalProject_Add(${HELAS_PREFIX}
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/helas204
+	INSTALL_COMMAND ""
+	CONFIGURE_COMMAND ""
+	BUILD_IN_SOURCE 1
+	BUILD_COMMAND ${HELAS_MAKE} -I objs/x86_64/gnu/
+)

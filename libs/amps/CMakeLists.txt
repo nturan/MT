@@ -1,3 +1,4 @@
+
 add_library(amps "gg_ttb.f"
                  "gg_ttbg.f"
                  "gu_ttbu.f"
@@ -9,4 +10,5 @@ add_library(amps "gg_ttb.f"
                  "uub_ttb.f"
                  "uub_ttbg.f")
 
+add_dependencies(amps helas204)
 target_link_libraries(amps "-ldhelas")

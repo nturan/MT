@@ -1,0 +1,36 @@
+# $Modified: Mon Apr  6 17:59:27 2009 by uwer $
+
+ifeq ("$(MACHTYPE)", "x86_64")
+ ARCH = x86_64
+else
+ ARCH = x86
+endif
+
+ifeq ("$(COMPILER)", "intel")
+  CXX = icpc
+  CC = icc
+  FC = ifort
+  SETCXXOUT = -c -o
+  SETLDOUT = -o
+  LFLAGS = -lirc -limf  -lifport -lifcoremt -lpthread
+endif
+
+ifeq ("$(COMPILER)", "gnu")
+  CXX = g++
+  CC = gcc
+  FC = gfortran
+  SETCXXOUT = -c -o
+  SETLDOUT = -o
+  LFLAGS = -lgfortranbegin -lgfortran -lm
+#  CFLAGS = -O2
+#  FFLAGS = -O2
+endif
+  
+ifeq ($(UNAME),Linux)
+  LN = $(CXX)
+  RM = rm
+  RMOPTS = -f
+else
+  RM =del
+endif
+
