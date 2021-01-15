@@ -4,6 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 
 enable_language(Fortran)
+set(CMAKE_CXX_STANDARD 17)
 
 set(MT "ttbar_NLO")
 
@@ -29,7 +30,9 @@ add_executable (${MT} "src/main.cc"
                       "src/n_dimensional_integral.cc"
                       "src/helper.cc" 
                       "src/histogram.cc" 
-                      "include/cxxopts.hpp")
+                      "include/cxxopts.hpp" 
+                      "src/event_generator.cc" 
+                      "src/matrix_element_method.cc")
 
 target_link_libraries(${MT} virtualAmps)
 target_link_libraries(${MT} amps)

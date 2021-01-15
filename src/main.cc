@@ -4,8 +4,9 @@
 #include <algorithm>
 #include "SysInfo.h"
 #include "cross_sections.h"
-#include "n_dimensional_integral.h"
 #include "cxxopts.hpp"
+#include "event_generator.h"
+#include "matrix_element_method.h"
 
 
 
@@ -26,6 +27,10 @@ int main( int argc, char* argv[] ) {
 		("histogram", "Histogram creation strings", cxxopts::value<std::vector<std::string>>()->default_value(""))
 		("calls", "Number of calls to integrand", cxxopts::value<int>()->default_value("100000"))
 		("iterations", "Number of vegas iterations", cxxopts::value<int>()->default_value("10"))
+		("lo_events", "Number of LO Events", cxxopts::value<int>()->default_value("0"))
+		("nlo_events", "Number of NLO Events", cxxopts::value<int>()->default_value("0"))
+		("events_file", "Events from file", cxxopts::value<std::string>()->default_value(""))
+		("evaluate_events", "Evaluate events", cxxopts::value<bool>()->default_value("false"))
 		("h,help", "Print usage")
 		;
 	auto result = options.parse(argc, argv);
@@ -43,12 +48,16 @@ int main( int argc, char* argv[] ) {
 	double xmin = result["xmin"].as<double>();
 	int calls = result["calls"].as<int>();
 	int iterations = result["iterations"].as<int>();
-	std::vector<std::string> po = result["po"].as<std::vector<std::string>>();
+	std::vector<std::string> perturbation_order = result["po"].as<std::vector<std::string>>();
 	std::vector<std::string> channels = result["ch"].as<std::vector<std::string>>();
 	std::string pdf_name = result["pdf"].as<std::string>();
 	std::vector<std::string> histogram_strings = result["histogram"].as<std::vector<std::string>>();
-	std::map<std::string, Parameters*> parameter_sets;
-	std::map<std::string, std::vector<Histogram*>*> histogram_sets;
+
+	int number_of_lo_events = result["lo_events"].as<int>();
+	int number_of_nlo_events = result["nlo_events"].as<int>();
+	std::string events_file = result["events_file"].as<std::string>();
+	bool evaluating_events = result["evaluate_events"].as<bool>();
+
 
 
 
@@ -60,46 +69,12 @@ int main( int argc, char* argv[] ) {
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = m;
 	unsigned int iseed = 3720758; // I can also take the cpu time here.
+	iseed = (unsigned int)time(0);
 	const int lxlev = 1;
 	rlxd_init(lxlev, iseed);
-	
 
-
-
-	std::map<std::string, std::pair<double, double>> lo_variables{
-		{"E1",     std::make_pair(m, ecms/2.0)},
-		{"phi1",   std::make_pair(-M_PI, M_PI)},
-		{"theta1", std::make_pair(0.0, M_PI)},
-		{"theta2", std::make_pair(0.0, M_PI)}
-	};
-
-	std::map<std::string, std::pair<double, double>> nlo_2_variables{
-		{"E1",     std::make_pair(m, ecms / 2.0)},
-		{"phi1",   std::make_pair(-M_PI, M_PI)},
-		{"theta1", std::make_pair(0.0, M_PI)},
-		{"theta2", std::make_pair(0.0, M_PI)},
-		{"z",      std::make_pair(0.0,1.0)}
-	};
-
-	std::map<std::string, std::pair<double, double>> nlo_3_variables{
-		{"E1",     std::make_pair(m, ecms / 2.0)},
-		{"phi1",   std::make_pair(-M_PI, M_PI)},
-		{"theta1", std::make_pair(0.0, M_PI)},
-		{"theta2", std::make_pair(0.0, M_PI)},
-		{"E3",     std::make_pair(0.0,ecms)},
-		{"phi3",   std::make_pair(-M_PI,M_PI)},
-		{"theta3", std::make_pair(0.0, M_PI)}
-	};
-
-
-	std::map<std::string, Integrand> lo_integrands, lo_nlo_2_integrands, 
-		nlo_2_integrands, nlo_3_integrands;
-
-
-	using namespace std::placeholders;
-	//std::bind always copies the argument.  to force it pass by reference i used std::ref
 	parameter_sets.insert(
-		{"scale=1.0", new Parameters (pdf_name, ecms, mur, muf, m, xmin, channels) });
+		{"default", new Parameters (pdf_name, ecms, mur, muf, m, xmin, channels) });
 	if (scale_is_dynamic) {
 		parameter_sets.insert(
 			{ "scale=2.0", new Parameters(pdf_name, ecms, 2.0*mur, 2.0*muf, m, xmin, channels) });
@@ -107,59 +82,34 @@ int main( int argc, char* argv[] ) {
 			{ "scale=0.5", new Parameters(pdf_name, ecms, 0.5*mur, 0.5*muf, m, xmin, channels) });
 	}
 
-	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
+	InitializeIntegrands(histogram_strings, ecms, m);
+	ExecuteIntegralsAndPrintResults(perturbation_order, iterations, calls);
 
-		std::vector<Histogram*> *hists = new std::vector<Histogram*>();
-		for (auto ij = histogram_strings.begin(); ij != histogram_strings.end(); ++ij) {
-			hists->push_back(new Histogram(*ij, it->second));
+	EventGenerator* eg;
+
+	if ( number_of_lo_events>0 ) {
+		eg = new EventGenerator(number_of_lo_events, "lo", parameter_sets["default"]);
+		eg->Print();
+	}
+	if (number_of_nlo_events > 0) {
+		eg = new EventGenerator(number_of_nlo_events, "nlo", parameter_sets["default"]);
+		eg->Print();
+	}
+	if (events_file != "") {
+		eg = new EventGenerator(events_file);
+	}
+
+	if (evaluating_events) {
+		Parameters* p[20];
+		for (int i = 0; i < 20; ++i) {
+			p[i] = new Parameters(pdf_name, ecms, mur, muf, 160.0 + i * 1.25, xmin, channels);
+			EvaluateEvents(eg, p[i]);
+			delete p[i];
 		}
-
-		histogram_sets.insert({ it->first, hists });
-		lo_integrands[it->first]       = std::bind(&lo::Hadronic,           _1, _2, it->second, hists);
-		lo_nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2WithBorn, _1, _2, it->second, hists);
-		nlo_2_integrands[it->first]    = std::bind(&nlo::Hadronic2,         _1, _2, it->second, hists);
-		nlo_3_integrands[it->first]    = std::bind(&nlo::Hadronic3,         _1, _2, it->second, hists);
 	}
 	
-
-	std::map<std::string, std::vector<Integral*>*> integrals = { 
-		{"lo",  new std::vector<Integral*>{ new Integral(lo_variables,    lo_integrands) }},
-		{"nlo", new std::vector<Integral*>{ new Integral(nlo_2_variables, nlo_2_integrands),
-											new Integral(nlo_3_variables, nlo_3_integrands)}},
-		{"lo+nlo", new std::vector<Integral*>{ new Integral(nlo_2_variables, lo_nlo_2_integrands),
-			                                   new Integral(nlo_3_variables, nlo_3_integrands)}}};
-
-	for (auto it = po.begin(); it != po.end(); ++it) {
-		std::map<std::string, std::tuple<double, double, double>> results;
-		for (auto ij = integrals.find(*it)->second->begin(); ij != integrals.find(*it)->second->end(); ++ij) {
-			(*ij)->ExecuteVegas(1, 30, 10000, 1);
-			(*ij)->ExecuteVegas(2, iterations, calls, 1);
-			for (auto ik = (*ij)->results_.begin(); ik != (*ij)->results_.end(); ++ik) {
-				double val_new, err_new, chi_new;
-				double val_old, err_old, chi_old;
-				std::tie(val_new, err_new, chi_new) = ik->second;
-				std::tie(val_old, err_old, chi_old) = results[ik->first];
-				val_old = val_old + val_new;
-				err_old = std::sqrt( err_old*err_old + err_new*err_new );
-				chi_old = (chi_old != 0 ? 0.5 : 1.0) * (chi_old + chi_new);
-				results[ik->first] = std::make_tuple(val_old, err_old, chi_old);
-			}
-		}
-		for (auto ij = results.begin(); ij != results.end(); ++ij) {
-			double val, err, chi;
-			std::tie(val, err, chi) = ij->second;
-			std::cout << "#RESULTS for " << *it << " with " << ij->first << ": " 
-				<< val << " +/- " << err
-				<< " with chi2 = " << chi << std::endl;
-			std::cout << "Histograms for parameter set: " << ij->first << std::endl;
-			for (auto ik  = histogram_sets.find(ij->first)->second->begin(); 
-				      ik != histogram_sets.find(ij->first)->second->end(); ++ik) {
-				(*ik)->Print();
-				(*ik)->Clear();
-			}
-		}
-	}
-
+	delete eg;
+	
 	
 
 	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {

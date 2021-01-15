@@ -46,10 +46,6 @@ Histogram::Histogram(std::string name, std::pair<double, double> limits, unsigne
 	pdf_name_ = p->GetPdfName();
 }
 
-Histogram::~Histogram(){
-	std::cout << "Histogram: " << name_ << " deleted" << std::endl;
-}
-
 Histogram::Histogram(std::string initialization_string, Parameters* p) {
 
 	std::string s;

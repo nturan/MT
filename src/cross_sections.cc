@@ -1,4 +1,17 @@
 #include "cross_sections.h"
+
+
+std::map<std::string, Parameters*> parameter_sets;
+std::map<std::string, std::vector<Histogram*>*> histogram_sets;
+
+std::map<std::string, std::pair<double, double>> lo_variables, 
+nlo_2_variables, nlo_3_variables, nlo_z_variables, nlo_j_variables;
+
+std::map<std::string, Integrand> lo_integrands, lo_nlo_2_integrands,
+								 nlo_2_integrands, nlo_3_integrands;
+
+std::map<std::string, std::vector<Integral*>*> integrals; 
+
 PartonicContribution lo::partonic::Born = {
 	{"gg", &lo::partonic::gg},
 	{"qqb", &lo::partonic::qqb},
@@ -72,6 +85,83 @@ PartonicContribution nlo::partonic::Coll_0 = {
 	{"gqb", &NoContribution}
 };
 
+void InitializeIntegrands(std::vector<std::string> histogram_strings, double ecms, double m) {
+	
+	lo_variables["E1"]     = std::make_pair(m, ecms / 2.0);
+	lo_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
+	lo_variables["theta1"] = std::make_pair(0.0, M_PI);
+	lo_variables["theta2"] = std::make_pair(0.0, M_PI);
+
+	nlo_2_variables["E1"]     = std::make_pair(m, ecms / 2.0);
+	nlo_2_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
+	nlo_2_variables["theta1"] = std::make_pair(0.0, M_PI);
+	nlo_2_variables["theta2"] = std::make_pair(0.0, M_PI);
+	nlo_2_variables["z"]      = std::make_pair(0.0, 1.0);
+
+	nlo_3_variables["E1"]     = std::make_pair(m, ecms / 2.0);
+	nlo_3_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
+	nlo_3_variables["theta1"] = std::make_pair(0.0, M_PI);
+	nlo_3_variables["theta2"] = std::make_pair(0.0, M_PI);
+	nlo_3_variables["E3"]     = std::make_pair(0.0, ecms);
+	nlo_3_variables["phi3"]   = std::make_pair(-M_PI, M_PI);
+	nlo_3_variables["theta3"] = std::make_pair(0.0, M_PI);
+
+
+	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
+
+		std::vector<Histogram*>* hists = new std::vector<Histogram*>();
+		for (auto ij = histogram_strings.begin(); ij != histogram_strings.end(); ++ij) {
+			hists->push_back(new Histogram(*ij, it->second));
+		}
+		using namespace std::placeholders;
+		histogram_sets.insert({ it->first, hists });
+		lo_integrands[it->first] = std::bind(&lo::Hadronic, _1, _2, it->second, hists);
+		lo_nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2WithBorn, _1, _2, it->second, hists);
+		nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2, _1, _2, it->second, hists);
+		nlo_3_integrands[it->first] = std::bind(&nlo::Hadronic3, _1, _2, it->second, hists);
+	}
+
+	integrals["lo"]  = new std::vector<Integral*>{ new Integral(lo_variables,    lo_integrands) };
+	integrals["nlo"] = new std::vector<Integral*>{ new Integral(nlo_2_variables, nlo_2_integrands),
+												   new Integral(nlo_3_variables, nlo_3_integrands) };
+	integrals["lo+nlo"] = new std::vector<Integral*>{ new Integral(nlo_2_variables, lo_nlo_2_integrands),
+											          new Integral(nlo_3_variables, nlo_3_integrands) };
+}
+
+void ExecuteIntegralsAndPrintResults(std::vector<std::string> perturbation_order, int iterations, int calls) {
+	for (auto it = perturbation_order.begin(); it != perturbation_order.end(); ++it) {
+		std::map<std::string, std::tuple<double, double, double>> results;
+		for (auto ij = integrals.find(*it)->second->begin(); ij != integrals.find(*it)->second->end(); ++ij) {
+			(*ij)->ExecuteVegas(1, 30, 10000, 1);
+			(*ij)->ExecuteVegas(2, iterations, calls, 1);
+			for (auto ik = (*ij)->results_.begin(); ik != (*ij)->results_.end(); ++ik) {
+				double val_new, err_new, chi_new;
+				double val_old, err_old, chi_old;
+				std::tie(val_new, err_new, chi_new) = ik->second;
+				std::tie(val_old, err_old, chi_old) = results[ik->first];
+				val_old = val_old + val_new;
+				err_old = std::sqrt(err_old * err_old + err_new * err_new);
+				chi_old = (chi_old != 0 ? 0.5 : 1.0) * (chi_old + chi_new);
+				results[ik->first] = std::make_tuple(val_old, err_old, chi_old);
+			}
+		}
+		for (auto ij = results.begin(); ij != results.end(); ++ij) {
+			double val, err, chi;
+			std::tie(val, err, chi) = ij->second;
+			std::cout << "#RESULTS for " << *it << " with " << ij->first << ": "
+				<< val << " +/- " << err
+				<< " with chi2 = " << chi << std::endl;
+			std::cout << "Histograms for parameter set: " << ij->first << std::endl;
+			for (auto ik = histogram_sets.find(ij->first)->second->begin();
+				ik != histogram_sets.find(ij->first)->second->end(); ++ik) {
+				(*ik)->Print();
+				(*ik)->Clear();
+			}
+		}
+	}
+
+}
+
 
 double lo::Hadronic( std::map<std::string, double> var, double& wgt, Parameters *p, std::vector<Histogram*>* histograms) {
 	double res = 0.0;
@@ -107,8 +197,48 @@ double nlo::Hadronic2WithBorn(std::map<std::string, double> var, double& wgt, Pa
 			+ nlo::partonic::Virt[*ij](PS, p)
 			+ nlo::partonic::Coll_0[*ij](PS, p)
 			+ nlo::partonic::Coll_1[*ij](PS, p));
-		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p);
-		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p);
+		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p)/z;
+		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p)/z;
+	}
+	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
+		(*it)->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
+double nlo::HadronicConstZ(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+	if (PS.dGamma_ == 0) {
+		return 0.0;
+	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
+		res += p->Fs[*ij](x1, x2) * ( nlo::partonic::Soft[*ij](PS, p)
+								    + nlo::partonic::Virt[*ij](PS, p)
+			                        + nlo::partonic::Coll_0[*ij](PS, p));
+	}
+	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
+		(*it)->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
+double nlo::HadronicZ(IntegrationVariablesMap var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+
+	if (PS.dGamma_ == 0) {
+		return 0.0;
+	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	double z = PS.z_;
+	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
+		res += p->Fs[*ij](x1, x2) * nlo::partonic::Coll_1[*ij](PS, p);
+		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p) / z;
+		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p) / z;
 	}
 	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
 		(*it)->Fill(PS, res * wgt);
@@ -126,12 +256,12 @@ double nlo::Hadronic2(std::map<std::string, double> var, double& wgt, Parameters
 	double x2 = PS.x2_;
 	double z = PS.z_;
 	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
-		res += p->Fs[*ij](x1, x2) * ( nlo::partonic::Soft[*ij](PS, p)
-								    + nlo::partonic::Virt[*ij](PS, p)
-			                        + nlo::partonic::Coll_0[*ij](PS, p)
-			                        + nlo::partonic::Coll_1[*ij](PS, p));
-		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p);
-		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p);
+		res += p->Fs[*ij](x1, x2) * (nlo::partonic::Soft[*ij](PS, p)
+			+ nlo::partonic::Virt[*ij](PS, p)
+			+ nlo::partonic::Coll_0[*ij](PS, p)
+			+ nlo::partonic::Coll_1[*ij](PS, p));
+		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p)/z;
+		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p)/z;
 	}
 	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
 		(*it)->Fill(PS, res * wgt);
