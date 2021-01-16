@@ -7,4 +7,7 @@ add_library(virtualAmps   "bsyspinors.f"
                           "ampqq.f"
                           "bsypptt.f")
 
+
+add_dependencies(virtualAmps ff)
+add_dependencies(virtualAmps qcdloop)
 target_link_libraries(virtualAmps "-lqcdloop" "-lff")

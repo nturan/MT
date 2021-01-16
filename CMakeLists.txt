@@ -37,6 +37,8 @@ add_executable (${MT} "src/main.cc"
 
 
 include(libs/helas204/helas.cmake)
+include(libs/QCDLoop/ff/ff.cmake)
+include(libs/QCDLoop/ql/qcdloop.cmake)
 target_link_libraries(${MT} virtualAmps)
 target_link_libraries(${MT} amps)
 target_link_libraries(${MT} ranlux)

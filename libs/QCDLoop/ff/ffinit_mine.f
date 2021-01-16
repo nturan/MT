@@ -776,14 +776,14 @@
 *
 *	first try - my home directory
 C	path = '/user/gj/lib/
-	path = '/home/turan/src/QCDLoop/ff/'
+	path = '/scratch/turan/ff/'
 	fullname = path(1:index(path,' ')-1)//name
 	open(ifile,file=fullname,status='OLD',err=30)
 	return
    30	continue
 *	second try - the system directory
 C	path = '/usr/local/ff/'
-	path = '/home/turan/src/QCDLoop/ff/'
+	path = '/scratch/turan/ff/'
 	fullname = path(1:index(path,' ')-1)//name
 	open(ifile,file=fullname,status='OLD',err=40)
 	return

@@ -1,0 +1,10 @@
+set(FF_PREFIX qcdloop)
+
+ExternalProject_Add(${FF_PREFIX}
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/QCDLoop/ql
+	INSTALL_COMMAND ""
+	CONFIGURE_COMMAND ""
+	BUILD_IN_SOURCE 1
+	DEPEND ff
+	BUILD_COMMAND make
+)
