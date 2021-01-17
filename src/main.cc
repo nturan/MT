@@ -13,7 +13,7 @@
 int main( int argc, char* argv[] ) {
 
 	SysInfo sys_info;
-	cxxopts::Options options("MyProgram", "One line description of MyProgram");
+	cxxopts::Options options("ttbar@NLO", "Hadronic ttbar production cross section at NLO accuracy");
 	options.add_options()
 		("ecms", "Collider energy", cxxopts::value<double>()->default_value("13000.0"))
 		("mtop", "Top quark mass", cxxopts::value<double>()->default_value("173.2"))
@@ -29,13 +29,11 @@ int main( int argc, char* argv[] ) {
 		("iterations", "Number of vegas iterations", cxxopts::value<int>()->default_value("10"))
 		("lo_events", "Number of LO Events", cxxopts::value<int>()->default_value("0"))
 		("nlo_events", "Number of NLO Events", cxxopts::value<int>()->default_value("0"))
-		("events_file", "Events from file", cxxopts::value<std::string>()->default_value(""))
-		("evaluate_events", "Evaluate events", cxxopts::value<bool>()->default_value("false"))
+		("evaluate_events", "Evaluate events", cxxopts::value<std::string>()->default_value(""))
 		("h,help", "Print usage")
 		;
 	auto result = options.parse(argc, argv);
-	if (result.count("help"))
-	{
+	if (result.count("help")){
 		std::cout << options.help() << std::endl;
 		exit(0);
 	}
@@ -55,8 +53,7 @@ int main( int argc, char* argv[] ) {
 
 	int number_of_lo_events = result["lo_events"].as<int>();
 	int number_of_nlo_events = result["nlo_events"].as<int>();
-	std::string events_file = result["events_file"].as<std::string>();
-	bool evaluating_events = result["evaluate_events"].as<bool>();
+	std::string evaluate_events = result["evaluate_events"].as<std::string>();
 
 
 
@@ -95,17 +92,9 @@ int main( int argc, char* argv[] ) {
 		eg = new EventGenerator(number_of_nlo_events, "nlo", parameter_sets["default"]);
 		eg->Print();
 	}
-	if (events_file != "") {
-		eg = new EventGenerator(events_file);
-	}
-
-	if (evaluating_events) {
-		Parameters* p[20];
-		for (int i = 0; i < 20; ++i) {
-			p[i] = new Parameters(pdf_name, ecms, mur, muf, 160.0 + i * 1.25, xmin, channels);
-			EvaluateEvents(eg, p[i]);
-			delete p[i];
-		}
+	if (evaluate_events != "") {
+		eg = new EventGenerator(evaluate_events);
+		EvaluateEvents(eg, parameter_sets["default"]);
 	}
 	
 	delete eg;

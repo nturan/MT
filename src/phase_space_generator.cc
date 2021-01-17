@@ -48,6 +48,10 @@ void PhaseSpaceGenerator::generatePS2(std::map<std::string, double> var)
 		dGamma_ = 0.0;
 		return;
 	}    /* bigger energies are kinematically impossible */
+	if (E1 < m) {
+		dGamma_ = 0.0;
+		return;
+	}
 	if (E2 < m) {
 		dGamma_ = 0.0;
 		return;
@@ -120,7 +124,14 @@ void PhaseSpaceGenerator::generatePS3(std::map<std::string, double> var) {
 		k1p * std::cos(phi1) + k3p * std::cos(phi3));
 
 	double E2 = std::sqrt(std::pow(k2p * std::cosh(eta2), 2) + m2);
-
+	if (E1 < m) {
+		dGamma_ = 0.0;
+		return;
+	}
+	if (E2 < m) {
+		dGamma_ = 0.0;
+		return;
+	}
 
 	double k1[4] = { E1, k1p * std::cos(phi1), k1p * std::sin(phi1), k1p * std::sinh(eta1) };
 	double k2[4] = { E2,-k2p * std::cos(phi2),-k2p * std::sin(phi2), k2p * std::sinh(eta2) };
