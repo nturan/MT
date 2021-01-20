@@ -21,7 +21,7 @@ int main( int argc, char* argv[] ) {
 		("muf", "Factorization scale", cxxopts::value<double>()->default_value("173.2"))
 		("dynamic_scale", "Dynamic Scale", cxxopts::value<bool>()->default_value("false"))
 		("xmin", "Phase space slicing cut parameter", cxxopts::value<double>()->default_value("0.0005"))
-		("po", "Perturbation order", cxxopts::value<std::vector<std::string>>()->default_value("lo"))
+		("po", "Perturbation order", cxxopts::value<std::vector<std::string>>()->default_value(""))
 		("ch", "Parton channels", cxxopts::value<std::vector<std::string>>()->default_value("all"))
 		("pdf", "LHAPDF set name", cxxopts::value<std::string>()->default_value("CT10nlo"))
 		("histogram", "Histogram creation strings", cxxopts::value<std::vector<std::string>>()->default_value(""))
@@ -82,29 +82,27 @@ int main( int argc, char* argv[] ) {
 	InitializeIntegrands(histogram_strings, ecms, m);
 	ExecuteIntegralsAndPrintResults(perturbation_order, iterations, calls);
 
-	EventGenerator* eg;
+
 
 	if ( number_of_lo_events>0 ) {
-		eg = new EventGenerator(number_of_lo_events, "lo", parameter_sets["default"]);
+		EventGenerator* eg = new EventGenerator(number_of_lo_events, "lo", parameter_sets["default"]);
 		eg->Print();
+		delete eg;
 	}
 	if (number_of_nlo_events > 0) {
-		eg = new EventGenerator(number_of_nlo_events, "nlo", parameter_sets["default"]);
+		EventGenerator* eg = new EventGenerator(number_of_nlo_events, "nlo", parameter_sets["default"]);
 		eg->Print();
+		delete eg;
 	}
 	if (evaluate_events != "") {
-		eg = new EventGenerator(evaluate_events);
+		EventGenerator* eg = new EventGenerator(evaluate_events);
 		EvaluateEvents(eg, parameter_sets["default"]);
+		delete eg;
 	}
 	
-	delete eg;
 	
 	
 
-	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
-		delete it->second;
-	}
-    parameter_sets.clear();
 	for (auto it = histogram_sets.begin(); it != histogram_sets.end(); ++it) {
 		for (auto ij = it->second->begin(); ij != it->second->end(); ++ij) {
 			delete *ij;
@@ -122,6 +120,12 @@ int main( int argc, char* argv[] ) {
 		delete it->second;
 	}
 	integrals.clear();
+
+
+	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
+		delete it->second;
+	}
+	parameter_sets.clear();
 
 	return 0;
 }

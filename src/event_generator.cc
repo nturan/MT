@@ -8,6 +8,8 @@ double LoMaxIntegrandFinderIntegral(
 	return result;
 }
 
+EventGenerator::EventGenerator(){}
+
 EventGenerator::EventGenerator(std::string file_name) {
 	events.clear();
 	std::ifstream in_file(file_name);
@@ -63,7 +65,7 @@ void EventGenerator::GenerateLOEvents(unsigned int number, Parameters* p) {
 		ranlxd(y, 1);
 		double rho = y[0] * max_integrand * 1.1;
 		if (integrand > rho) {
-			events.push_back(std::tie(v["E1"], v["phi1"], v["theta1"], v["theta2"], integrand));
+			events.push_back(std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], integrand));
 		}
 	}
 	double efficiency = 100.0 * ((double)number) / attempt_counter;
@@ -110,7 +112,7 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 		++attempt_counter;
 		double lo_weight;
 		double wgt = 1.0;
-		std::tie(v["E1"], v["phi1"], v["theta1"], v["theta2"], lo_weight) = *e;
+		std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], lo_weight) = *e;
 		double dLO = lo::Hadronic(v, wgt, p, empty_histogram_set)*jac;
 		double dNLOconst = nlo::HadronicConstZ(v, wgt, p, empty_histogram_set)*jac;
 		double accuracy = 1.0E-2;	
@@ -136,7 +138,7 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 		double rho = y[0] * lo_weight * 2.0;
 		if (dNLO > rho) {
 			std::cout << "event added" << std::endl;
-			events.push_back(std::tie(v["E1"], v["phi1"], v["theta1"], v["theta2"], dNLO));
+			events.push_back(std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], dNLO));
 		}
 		else {
 			std::cout << "event discarded" << std::endl;

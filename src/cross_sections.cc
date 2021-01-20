@@ -87,22 +87,22 @@ PartonicContribution nlo::partonic::Coll_0 = {
 
 void InitializeIntegrands(std::vector<std::string> histogram_strings, double ecms, double m) {
 	
-	lo_variables["E1"]     = std::make_pair(m, ecms / 2.0);
+	lo_variables["k1p"]     = std::make_pair(0.0, std::sqrt( ecms*ecms/4.0 - m*m ));
 	lo_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
 	lo_variables["theta1"] = std::make_pair(0.0, M_PI);
 	lo_variables["theta2"] = std::make_pair(0.0, M_PI);
 
-	nlo_2_variables["E1"]     = std::make_pair(m, ecms / 2.0);
+	nlo_2_variables["k1p"]     = std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
 	nlo_2_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
 	nlo_2_variables["theta1"] = std::make_pair(0.0, M_PI);
 	nlo_2_variables["theta2"] = std::make_pair(0.0, M_PI);
 	nlo_2_variables["z"]      = std::make_pair(0.0, 1.0);
 
-	nlo_3_variables["E1"]     = std::make_pair(m, ecms / 2.0);
+	nlo_3_variables["k1p"]     = std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
 	nlo_3_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
 	nlo_3_variables["theta1"] = std::make_pair(0.0, M_PI);
 	nlo_3_variables["theta2"] = std::make_pair(0.0, M_PI);
-	nlo_3_variables["E3"]     = std::make_pair(0.0, ecms);
+	nlo_3_variables["k3p"]     = std::make_pair(0.0, ecms);
 	nlo_3_variables["phi3"]   = std::make_pair(-M_PI, M_PI);
 	nlo_3_variables["theta3"] = std::make_pair(0.0, M_PI);
 

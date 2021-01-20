@@ -16,6 +16,7 @@ private:
 	void GenerateNLOEvents(unsigned int number, Parameters* p);
 	std::vector<Event> events;
 public:
+	EventGenerator();
 	EventGenerator(unsigned int number, std::string perturbation_order, Parameters* p);
 	EventGenerator(std::string file_name);
 	std::vector<Event> GetEvents();
