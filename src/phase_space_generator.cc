@@ -145,7 +145,7 @@ void PhaseSpaceGenerator::generatePS3(std::map<std::string, double> var) {
 //	double jac = 1.0 / std::pow(2 * M_PI, 5) / 4.0 / Shad * k1p / std::cosh(eta1)
 //		* beta * k3p / std::cosh(eta3) * dEta1 * dEta2 * dEta3;
 
-	double jac = 1.0 / std::pow(2.0 * M_PI, 5) * 2.0 / Shad / 2.0 / E1 / 2.0 / E2 / 2.0 / E3 * k1p * k1p * k2p * k3p * k3p * std::cosh(eta1) * std::cosh(eta2) * std::cosh(eta3);
+	double jac = 1.0 / std::pow(2.0 * M_PI, 5) * 2.0 / Shad / 2.0 / E1 / 2.0 / E2 / 2.0 / E3 * k1p * k1p * k2p * k3p * k3p * std::cosh(eta1) * std::cosh(eta2) * std::cosh(eta3) * dEta1 * dEta2 * dEta3;
 
 	x1_ = (k1[0] + k2[0] + k3[0] + k1[3] + k2[3] + k3[3]) / Ecms;
 	x2_ = (k1[0] + k2[0] + k3[0] - k1[3] - k2[3] - k3[3]) / Ecms;
