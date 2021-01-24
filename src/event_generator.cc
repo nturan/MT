@@ -84,7 +84,7 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 	std::vector<Histogram*>* empty_histogram_set = new std::vector<Histogram*>();
 	int attempt_counter = 0;
 	std::cout << "Generating LO events to sample from their distribution" << std::endl;
-	GenerateLOEvents(1000000, p);
+	GenerateLOEvents(number*3, p);
 	std::vector<Event> lo_events = events;
 	events.clear();
 

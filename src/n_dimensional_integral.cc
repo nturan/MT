@@ -64,6 +64,7 @@ void Integral::ExecuteVegas(
     results_["default"] = std::make_tuple( integrator_->avgi_[0],
                                             integrator_->sd_[0],
                                             integrator_->chi2a_[0] );
+    return;
   }
 
 
@@ -91,7 +92,7 @@ double Integral::f(double x[],double wgt, double res[]) {
 
   int i = 0;
   int number_of_calls = integrator_->getcalls();
-  double weight = wgt / number_of_calls / iterations_;
+  double weight = wgt / number_of_calls / iterations_ * jac;
   for ( auto it = integrands_.begin(); it != integrands_.end(); ++it ) {
       res[i] = it->second(variables, weight) * jac;
       ++i;
@@ -115,16 +116,6 @@ double Integral::CombinedIntegrationF(double x[5], double wgt, double res[]) {
     IntegrationVariablesMap variables1 = MapToHyperCube(limits1_, &x1[0], jac1, constants1_);
     IntegrationVariablesMap variables2 = MapToHyperCube(limits2_, &x2[0], jac2, constants2_);
 
-    //std::cout << "variables1: ";
-    //for (auto& l : variables1) {
-    //    std::cout << l.first << "=" << l.second << ", ";
-    //}
-    //std::cout << std::endl;
-    //std::cout << "variables2: ";
-    //for (auto& l : variables2) {
-    //    std::cout << l.first << "="<< l.second << ", ";
-    //}
-    //std::cout << std::endl;
     bool performing_first_integration = x[dimension_ - 1] < 0.1;
 
     int number_of_calls = integrator_->getcalls();

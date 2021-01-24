@@ -132,8 +132,12 @@ void ExecuteIntegralsAndPrintResults(std::vector<std::string> perturbation_order
 	for (auto it = perturbation_order.begin(); it != perturbation_order.end(); ++it) {
 		std::map<std::string, std::tuple<double, double, double>> results;
 		for (auto ij = integrals.find(*it)->second->begin(); ij != integrals.find(*it)->second->end(); ++ij) {
+			std::cout << "#INITIALISING GRID" << std::endl;
 			(*ij)->ExecuteVegas(1, 30, 10000, 1);
+			std::cout << "#VEGAS_START" << std::endl;
 			(*ij)->ExecuteVegas(2, iterations, calls, 1);
+			std::cout << "#VEGAS_END" << std::endl;
+
 			for (auto ik = (*ij)->results_.begin(); ik != (*ij)->results_.end(); ++ik) {
 				double val_new, err_new, chi_new;
 				double val_old, err_old, chi_old;

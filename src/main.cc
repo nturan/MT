@@ -21,7 +21,7 @@ int main( int argc, char* argv[] ) {
 		("muf", "Factorization scale", cxxopts::value<double>()->default_value("173.2"))
 		("dynamic_scale", "Dynamic Scale", cxxopts::value<bool>()->default_value("false"))
 		("xmin", "Phase space slicing cut parameter", cxxopts::value<double>()->default_value("0.0005"))
-		("po", "Perturbation order", cxxopts::value<std::vector<std::string>>()->default_value(""))
+		("calculateXS", "Calculate cross section: lo, nlo or lo+nlo", cxxopts::value<std::vector<std::string>>()->default_value(""))
 		("ch", "Parton channels", cxxopts::value<std::vector<std::string>>()->default_value("all"))
 		("pdf", "LHAPDF set name", cxxopts::value<std::string>()->default_value("CT10nlo"))
 		("histogram", "Histogram creation strings", cxxopts::value<std::vector<std::string>>()->default_value(""))
@@ -46,7 +46,7 @@ int main( int argc, char* argv[] ) {
 	double xmin = result["xmin"].as<double>();
 	int calls = result["calls"].as<int>();
 	int iterations = result["iterations"].as<int>();
-	std::vector<std::string> perturbation_order = result["po"].as<std::vector<std::string>>();
+	std::vector<std::string> perturbation_order = result["calculateXS"].as<std::vector<std::string>>();
 	std::vector<std::string> channels = result["ch"].as<std::vector<std::string>>();
 	std::string pdf_name = result["pdf"].as<std::string>();
 	std::vector<std::string> histogram_strings = result["histogram"].as<std::vector<std::string>>();
