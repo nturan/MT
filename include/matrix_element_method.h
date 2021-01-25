@@ -5,4 +5,5 @@
 #include <fstream>
 #include <iostream>
 
-void EvaluateEvents(EventGenerator* eg, Parameters* p);
+void EvaluateLoEvents(EventGenerator* eg, Parameters* p);
+void EvaluateNloEvents(EventGenerator* eg, Parameters* p);

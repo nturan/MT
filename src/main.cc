@@ -29,7 +29,8 @@ int main( int argc, char* argv[] ) {
 		("iterations", "Number of vegas iterations", cxxopts::value<int>()->default_value("10"))
 		("lo_events", "Number of LO Events", cxxopts::value<int>()->default_value("0"))
 		("nlo_events", "Number of NLO Events", cxxopts::value<int>()->default_value("0"))
-		("evaluate_events", "Evaluate events", cxxopts::value<std::string>()->default_value(""))
+		("evaluate_lo_events", "Evaluate LO events", cxxopts::value<std::string>()->default_value(""))
+		("evaluate_nlo_events", "Evaluate NLO events", cxxopts::value<std::string>()->default_value(""))
 		("h,help", "Print usage")
 		;
 	auto result = options.parse(argc, argv);
@@ -53,8 +54,8 @@ int main( int argc, char* argv[] ) {
 
 	int number_of_lo_events = result["lo_events"].as<int>();
 	int number_of_nlo_events = result["nlo_events"].as<int>();
-	std::string evaluate_events = result["evaluate_events"].as<std::string>();
-
+	std::string evaluate_lo_events = result["evaluate_lo_events"].as<std::string>();
+	std::string evaluate_nlo_events = result["evaluate_nlo_events"].as<std::string>();
 
 
 
@@ -94,9 +95,14 @@ int main( int argc, char* argv[] ) {
 		eg->Print();
 		delete eg;
 	}
-	if (evaluate_events != "") {
-		EventGenerator* eg = new EventGenerator(evaluate_events);
-		EvaluateEvents(eg, parameter_sets["default"]);
+	if (evaluate_lo_events != "") {
+		EventGenerator* eg = new EventGenerator(evaluate_lo_events);
+		EvaluateLoEvents(eg, parameter_sets["default"]);
+		delete eg;
+	}
+	if (evaluate_nlo_events != "") {
+		EventGenerator* eg = new EventGenerator(evaluate_nlo_events);
+		EvaluateNloEvents(eg, parameter_sets["default"]);
 		delete eg;
 	}
 	

@@ -6,9 +6,12 @@
 #include <fstream>
 #include <iostream>
 
-typedef std::tuple<double, double, double, double, double> Event;
+typedef std::tuple<double, double, double, double, double, double> Event;
 double LoMaxIntegrandFinderIntegral(std::map<std::string, double> v, double& wgt,
 	Parameters* p, std::vector<Histogram*>* histograms, double* max_integrand);
+
+std::tuple<double, double, double> NloHadronic(std::map<std::string, double> v, double& wgt,
+	Parameters* p, std::vector<Histogram*>* histograms, Integral* nlo_integral);
 
 class EventGenerator {
 private:
