@@ -1,12 +1,13 @@
 #include "n_dimensional_integral.h"
 
-Integral::Integral(std::vector<Integral*> integrals) {
+Integral::Integral(std::vector<Integral*> integrals, std::pair<double, double> ratio) {
     if (integrals.size() != 2) {
         std::cerr << "combined integration with " << integrals.size()
             << " has not been implemented yet..." << std::endl;
         exit(1);
     }
     performing_combined_integration_ = true;
+    ratio_ = ratio;
     limits1_ = integrals.at(0)->limits_;
     limits2_ = integrals.at(1)->limits_;
     integrands1_ = integrals.at(0)->integrands_;
@@ -35,10 +36,16 @@ Integral::~Integral()
     delete integrator_;
 }
 
-void Integral::ExecuteVegas(
+std::tuple<double, double, double> Integral::ExecuteVegas(
     int entry, int itmx, int ncall,int nprn) {
 
-  iterations_ += itmx;
+  
+    if (entry == 0) {
+        iterations_ = itmx;
+    }
+    else {
+        iterations_ += itmx;
+    }
 
   calls_=ncall;
 
@@ -64,18 +71,19 @@ void Integral::ExecuteVegas(
     results_["default"] = std::make_tuple( integrator_->avgi_[0],
                                             integrator_->sd_[0],
                                             integrator_->chi2a_[0] );
-    return;
+    return results_["default"];
   }
 
 
-   int i = 0;
-   for ( auto it = integrands_.begin(); it != integrands_.end(); ++it ) {
-     std::string name = it->first;
-     results_[name] = std::make_tuple(integrator_->avgi_[i],
-                                      integrator_->sd_[i],
-                                      integrator_->chi2a_[i]);
-     ++i;
-  }                    
+  int i = 0;
+  for ( auto it = integrands_.begin(); it != integrands_.end(); ++it ) {
+    std::string name = it->first;
+    results_[name] = std::make_tuple(integrator_->avgi_[i],
+                                     integrator_->sd_[i],
+                                     integrator_->chi2a_[i]);
+    ++i;
+  }  
+  return results_["default"];
 }
 
 
@@ -116,15 +124,15 @@ double Integral::CombinedIntegrationF(double x[5], double wgt, double res[]) {
     IntegrationVariablesMap variables1 = MapToHyperCube(limits1_, &x1[0], jac1, constants1_);
     IntegrationVariablesMap variables2 = MapToHyperCube(limits2_, &x2[0], jac2, constants2_);
 
-    bool performing_first_integration = x[dimension_ - 1] < 0.1;
+    bool performing_first_integration = x[dimension_ - 1] < ratio_.first;
 
     int number_of_calls = integrator_->getcalls();
     double weight = wgt / number_of_calls / iterations_;
     if (performing_first_integration) {
-        res[0] = integrands1_["default"](variables1, weight) * jac1 * 10.0;
+        res[0] = integrands1_["default"](variables1, weight) * jac1 / ratio_.first;
     }
     else {
-        res[0] = integrands2_["default"](variables2, weight) * jac2 * 10.0 / 9.0;
+        res[0] = integrands2_["default"](variables2, weight) * jac2 / ratio_.second;
     }
     return res[0];
 }

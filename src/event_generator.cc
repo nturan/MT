@@ -16,24 +16,24 @@ std::tuple<double, double, double> NloHadronic(std::map<std::string, double> v, 
 	double dLO = lo::Hadronic(v, wgt, p, histograms) * jac;
 	double dNLOconst = nlo::HadronicConstZ(v, wgt, p, histograms) * jac;
 	double accuracy = 5.0E-3;
-	int calls = 100000;
+	double calls = 10000;
 	nlo_integral->constants1_ = v;
 	nlo_integral->constants2_ = v;
-	nlo_integral->ExecuteVegas(0, 10, calls, 0);
-	double dNLOint, err, chi;
-	double dNLO;
-	std::tie(dNLOint, err, chi) = nlo_integral->results_["default"];
-	dNLO = dNLOint + dNLOconst + dLO;
-	double effective_nlo_xs = std::abs((dNLO - dLO) / dLO);
-	while (std::abs(err / dNLO) > accuracy * effective_nlo_xs) {
-		calls *= 1.2;
-		nlo_integral->ExecuteVegas(2, 1, calls, 0);
-		std::tie(dNLOint, err, chi) = nlo_integral->results_["default"];
+	auto [dNLOint, integration_error, chi] = nlo_integral->ExecuteVegas(0, 30, (int)calls, 1);
+	double dNLO = dNLOint + dNLOconst + dLO;
+	double relative_nlo_correction = std::abs( (dNLO - dLO) / dLO );
+	double relative_nlo_error = std::abs(integration_error / dNLO);
+	while ( relative_nlo_error / relative_nlo_correction > accuracy ) {
+		calls *= 1.5;
+		auto [dNLOint, integration_error, chi] = nlo_integral->ExecuteVegas(2, 1, (int)calls, 1);
 		dNLO = dNLOint + dNLOconst + dLO;
-		effective_nlo_xs = std::abs((dNLO - dLO) / dLO);
+		relative_nlo_correction = std::abs((dNLO - dLO) / dLO);
+		relative_nlo_error = std::abs(integration_error / dNLO);
+		std::cout << "     relative nlo error: " << relative_nlo_error << std::endl;
+		std::cout << "relative nlo correction: " << relative_nlo_correction << std::endl;
 	}
 
-	return std::tie(dNLO, err, chi);
+	return std::tie(dNLO, integration_error, chi);
 }
 
 EventGenerator::EventGenerator(){}
@@ -137,7 +137,7 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 
 	Integral* z_integral = new Integral(nlo_2_variables, z_integrands, v);
 	Integral* j_integral = new Integral(nlo_3_variables, j_integrands, v);
-	Integral* nlo_integral = new Integral(std::vector<Integral*>{z_integral, j_integral});
+	Integral* nlo_integral = new Integral(std::vector<Integral*>{z_integral, j_integral}, std::make_pair(0.01, 0.99));
 	for (auto e = lo_events.begin(); e != lo_events.end(); ++e) {
 		++attempt_counter;
 		double lo_weight, lo_error;
@@ -167,11 +167,13 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 }
 
 void EventGenerator::Print() {
+	std::cout << "#START: Events" << std::endl;
 	for (auto e = events.begin(); e != events.end(); ++e) {
 		double E1, phi1, theta1, theta2, weight, error;
 		std::tie(E1, phi1, theta1, theta2, weight, error) = *e;
 		std::cout << E1 << " " << phi1 << " " << theta1 << " " << theta2 << " " << weight  << " " << error << std::endl;
 	}
+	std::cout << "#END: Events" << std::endl;
 }
 
 std::vector<Event> EventGenerator::GetEvents() {

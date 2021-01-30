@@ -21,9 +21,7 @@ link_directories("libs/QCDLoop/ql")
 link_directories("libs/QCDLoop/ff")
 link_directories("/users/local/lhapdf/lib64")
 
-
-add_executable (${MT} "src/main.cc" 
-                      "src/SysInfo.cc"
+list(APPEND PROGRAM_SOURCES "src/SysInfo.cc"
                       "src/cross_sections.cc" 
                       "src/phase_space_generator.cc"
                       "src/parameters.cc"
@@ -33,6 +31,8 @@ add_executable (${MT} "src/main.cc"
                       "include/cxxopts.hpp" 
                       "src/event_generator.cc" 
                       "src/matrix_element_method.cc")
+
+add_executable (${MT} "src/main.cc" ${PROGRAM_SOURCES})
 
 
 

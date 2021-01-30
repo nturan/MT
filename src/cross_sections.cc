@@ -166,6 +166,40 @@ void ExecuteIntegralsAndPrintResults(std::vector<std::string> perturbation_order
 
 }
 
+void TestHardContributions( double ecms, double m ) {
+	IntegrationLimitsMap my_sin_limits, my_cos_limits;
+	my_sin_limits["x"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
+	my_sin_limits["y"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
+	my_sin_limits["z"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
+
+
+	my_cos_limits["v"] = std::make_pair(0.0, M_PI / 2.0);
+	my_cos_limits["w"] = std::make_pair(-M_PI / 4.0, M_PI / 2.0);
+	my_cos_limits["x"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
+	my_cos_limits["y"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
+	my_cos_limits["z"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
+	Integrand sin_integrand = [](IntegrationVariablesMap v, double& wgt) {return std::sin(v["x"] + v["y"] + v["z"]); };
+	std::map<std::string, Integrand> my_sin_integrands = { {"default", sin_integrand} };
+	Integral sin_integral(my_sin_limits, my_sin_integrands);
+
+	Integrand cos_integrand = [](IntegrationVariablesMap v, double& wgt) {return std::pow(std::cos(v["v"] + v["w"] + v["x"] + v["y"] + v["z"]), 3); };
+	std::map<std::string, Integrand> my_cos_integrands = { {"default", cos_integrand} };
+	Integral cos_integral(my_cos_limits, my_cos_integrands);
+	Integral test_integral(std::vector<Integral*>{&sin_integral, & cos_integral}, std::make_pair(0.001, 0.999));
+	test_integral.constants1_ = IntegrationVariablesMap{ {"y", M_PI/3.0}, {"z", M_PI / 6.0} };
+	test_integral.constants2_ = IntegrationVariablesMap{ {"y", M_PI / 10.0} };
+	double calls = 1000;
+	auto [res, err, chi] = test_integral.ExecuteVegas(0, 30, (int)calls, 1);
+	double relative_error = std::abs(err / res);
+	while ( relative_error > 0.001) {
+		std::cout << "relative error: " << relative_error << std::endl;
+		calls *= 1.2;
+		auto [res, err, chi] = test_integral.ExecuteVegas(2, 1, (int)calls, 1);
+		relative_error = std::abs(err / res);
+	}
+	
+}
+
 
 double lo::Hadronic( std::map<std::string, double> var, double& wgt, Parameters *p, std::vector<Histogram*>* histograms) {
 	double res = 0.0;

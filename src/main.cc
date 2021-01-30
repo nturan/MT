@@ -31,6 +31,8 @@ int main( int argc, char* argv[] ) {
 		("nlo_events", "Number of NLO Events", cxxopts::value<int>()->default_value("0"))
 		("evaluate_lo_events", "Evaluate LO events", cxxopts::value<std::string>()->default_value(""))
 		("evaluate_nlo_events", "Evaluate NLO events", cxxopts::value<std::string>()->default_value(""))
+		("test", "Perform test routines", cxxopts::value<bool>()->default_value("false"))
+		("seed", "Seed for random number generator", cxxopts::value<unsigned int>()->default_value("0"))
 		("h,help", "Print usage")
 		;
 	auto result = options.parse(argc, argv);
@@ -56,7 +58,8 @@ int main( int argc, char* argv[] ) {
 	int number_of_nlo_events = result["nlo_events"].as<int>();
 	std::string evaluate_lo_events = result["evaluate_lo_events"].as<std::string>();
 	std::string evaluate_nlo_events = result["evaluate_nlo_events"].as<std::string>();
-
+	bool running_test = result["test"].as<bool>();
+	unsigned int iseed = result["seed"].as<unsigned int>();
 
 
 	/* Initializing extern libraries */
@@ -66,9 +69,9 @@ int main( int argc, char* argv[] ) {
 	bsyppttinit_(&m, &Nf, &HV_CDR);
 	coupqcd_.gg[0] = -1.0, coupqcd_.gg[1] = -1.0, coupqcd_.g = 1.0; // 1.0 for gs 
 	fermions_.fmass[10] = m;
-	unsigned int iseed = 3720758; // I can also take the cpu time here.
-	iseed = (unsigned int)time(0);
+	iseed = iseed == 0 ? (unsigned int)time(0): iseed;
 	const int lxlev = 1;
+	std::cout << "ranlxs is initialized with seed=" << iseed << " and lxlevel=" << lxlev << std::endl;
 	rlxd_init(lxlev, iseed);
 
 	parameter_sets.insert(
@@ -82,6 +85,11 @@ int main( int argc, char* argv[] ) {
 
 	InitializeIntegrands(histogram_strings, ecms, m);
 	ExecuteIntegralsAndPrintResults(perturbation_order, iterations, calls);
+
+	if (running_test) {
+		TestHardContributions(ecms, m);
+		return 0;
+	}
 
 
 

@@ -29,6 +29,7 @@ extern std::map<std::string, Integrand> lo_integrands, lo_nlo_2_integrands,
 
 extern void InitializeIntegrands( std::vector<std::string> histogram_strings, double ecms, double m );
 extern void ExecuteIntegralsAndPrintResults( std::vector<std::string> perturbation_order, int iterations, int calls );
+extern void TestHardContributions( double ecms, double m );
 
 namespace lo {
 	HadronicCrossSection Hadronic;
