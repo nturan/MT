@@ -9,10 +9,16 @@
 
 typedef double PartonicCrossSection(PhaseSpaceGenerator,Parameters*);
 
-typedef double HadronicCrossSection(std::map<std::string, double> v, double& wgt, 
-	Parameters* p, std::vector<Histogram*>* histograms);
+typedef double HadronicCrossSection(
+	std::map<std::string, double> v, 
+	double& wgt, 
+	Parameters* p, 
+	std::vector<Histogram*>* histograms);
 
-typedef std::map<std::string, std::function<double(PhaseSpaceGenerator, Parameters*)>> PartonicContribution;
+typedef std::map<
+	std::string, 
+	std::function<double(PhaseSpaceGenerator, Parameters*)>
+> PartonicContribution;
 
 
 PartonicCrossSection NoContribution;
@@ -27,9 +33,15 @@ extern std::map<std::string, std::vector<Integral*>*> integrals;
 extern std::map<std::string, Integrand> lo_integrands, lo_nlo_2_integrands,
 										nlo_2_integrands, nlo_3_integrands;
 
-extern void InitializeIntegrands( std::vector<std::string> histogram_strings, double ecms, double m );
-extern void ExecuteIntegralsAndPrintResults( std::vector<std::string> perturbation_order, int iterations, int calls );
-extern void TestHardContributions( double ecms, double m );
+extern void InitializeIntegrands( 
+	std::vector<std::string> histogram_strings, 
+	double ecms, 
+	double m );
+extern void ExecuteIntegralsAndPrintResults( 
+	std::vector<std::string> perturbation_order, 
+	int iterations, 
+	int calls );
+extern void RunTestFunction( double ecms, double m );
 
 namespace lo {
 	HadronicCrossSection Hadronic;
@@ -41,9 +53,11 @@ namespace lo {
 }
 
 namespace nlo {
-	HadronicCrossSection Hadronic2WithBorn, Hadronic2, Hadronic3, HadronicConstZ, HadronicZ;
+	HadronicCrossSection Hadronic2WithBorn, Hadronic2, 
+		Hadronic3, HadronicConstZ, HadronicZ;
 	namespace partonic {
-		extern PartonicContribution Hard, Soft, Virt, Coll_left_z, Coll_right_z, Coll_1, Coll_0;
+		extern PartonicContribution Hard, Soft, Virt, Coll_left_z, 
+			Coll_right_z, Coll_1, Coll_0;
 		namespace hard {
 			PartonicCrossSection gg, qqb, qbq, qg, gq, qbg, gqb;
 		}

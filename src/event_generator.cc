@@ -8,29 +8,34 @@ double LoMaxIntegrandFinderIntegral(
 	return result;
 }
 
-std::tuple<double, double, double> NloHadronic(std::map<std::string, double> v, double& wgt, Parameters* p,
+std::tuple<double, double, double> NloHadronic(
+	std::map<std::string, double> v, double& wgt, Parameters* p,
 	std::vector<Histogram*>* histograms, Integral* nlo_integral) {
 	
 	double x[4], jac = 1.0;
 	MapToHyperCube(lo_variables, x, jac);
 	double dLO = lo::Hadronic(v, wgt, p, histograms) * jac;
 	double dNLOconst = nlo::HadronicConstZ(v, wgt, p, histograms) * jac;
-	double accuracy = 5.0E-3;
+	double accuracy = 1.0E-2;
 	double calls = 10000;
 	nlo_integral->constants1_ = v;
 	nlo_integral->constants2_ = v;
-	auto [dNLOint, integration_error, chi] = nlo_integral->ExecuteVegas(0, 30, (int)calls, 1);
+	auto [dNLOint, integration_error, chi] =
+		nlo_integral->ExecuteVegas(0, 30, (int)calls, 1);
 	double dNLO = dNLOint + dNLOconst + dLO;
 	double relative_nlo_correction = std::abs( (dNLO - dLO) / dLO );
 	double relative_nlo_error = std::abs(integration_error / dNLO);
 	while ( relative_nlo_error / relative_nlo_correction > accuracy ) {
 		calls *= 1.5;
-		auto [dNLOint, integration_error, chi] = nlo_integral->ExecuteVegas(2, 1, (int)calls, 1);
+		auto [dNLOint, integration_error, chi] = 
+			nlo_integral->ExecuteVegas(2, 1, (int)calls, 1);
 		dNLO = dNLOint + dNLOconst + dLO;
 		relative_nlo_correction = std::abs((dNLO - dLO) / dLO);
 		relative_nlo_error = std::abs(integration_error / dNLO);
-		std::cout << "     relative nlo error: " << relative_nlo_error << std::endl;
-		std::cout << "relative nlo correction: " << relative_nlo_correction << std::endl;
+		std::cout << "     relative nlo error: " 
+			<< relative_nlo_error << std::endl;
+		std::cout << "relative nlo correction: " 
+			<< relative_nlo_correction << std::endl;
 	}
 
 	return std::tie(dNLO, integration_error, chi);
@@ -54,7 +59,8 @@ EventGenerator::EventGenerator(std::string file_name) {
 }
 
 
-EventGenerator::EventGenerator(unsigned int number, std::string perturbation_order, Parameters* p){
+EventGenerator::EventGenerator(
+	unsigned int number, std::string perturbation_order, Parameters* p){
 	if (perturbation_order == "lo") {
 		GenerateLOEvents(number, p);
 	}
@@ -67,11 +73,15 @@ void EventGenerator::GenerateLOEvents(unsigned int number, Parameters* p) {
 	/* Determine max integrand */
 	using namespace std::placeholders;
 	double max_integrand = 0.0;
-	std::vector<Histogram*>* empty_histogram_set = new std::vector<Histogram*>();
-	Integrand new_integrand = std::bind(&LoMaxIntegrandFinderIntegral, _1, _2, p, 
-										empty_histogram_set, &max_integrand);
-	std::map<std::string, Integrand> integrands = { {"max finder", new_integrand} };
-	Integral* max_integrand_finder_integral = new Integral(lo_variables, integrands);
+	std::vector<Histogram*>* empty_histogram_set = 
+		new std::vector<Histogram*>();
+	Integrand new_integrand = 
+		std::bind(&LoMaxIntegrandFinderIntegral, _1, _2, p, 
+		empty_histogram_set, &max_integrand);
+	std::map<std::string, Integrand> integrands = { 
+		{"max finder", new_integrand} };
+	Integral* max_integrand_finder_integral = 
+		new Integral(lo_variables, integrands);
 	std::cout << "Now executing max integrand finder integral..." << std::endl;
 	max_integrand_finder_integral->ExecuteVegas(0, 10, 100000, 0);
 	//here i want to calculate jac by hand and multiple max_integrand with it.
@@ -95,11 +105,14 @@ void EventGenerator::GenerateLOEvents(unsigned int number, Parameters* p) {
 		double rho = y[0] * max_integrand * 1.1;
 		if (integrand > rho) {
 			double error = 0.0;
-			events.push_back(std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], integrand, error));
+			events.push_back(
+				std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], 
+					integrand, error));
 		}
 	}
 	double efficiency = 100.0 * ((double)number) / attempt_counter;
-	std::cout << "Event generation efficiency is: " << efficiency << "%." << std::endl;
+	std::cout << "Event generation efficiency is: " << efficiency 
+		<< "%." << std::endl;
 	delete max_integrand_finder_integral;
 	delete empty_histogram_set;
 }
@@ -111,17 +124,21 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 	
 	*/
 
-	std::vector<Histogram*>* empty_histogram_set = new std::vector<Histogram*>();
+	std::vector<Histogram*>* empty_histogram_set = 
+		new std::vector<Histogram*>();
 	int attempt_counter = 0;
-	std::cout << "Generating LO events to sample from their distribution" << std::endl;
+	std::cout << 
+		"Generating LO events to sample from their distribution" << std::endl;
 	GenerateLOEvents(number*3, p);
 	std::vector<Event> lo_events = events;
 	events.clear();
 
 
 	using namespace std::placeholders;
-	Integrand z_integrand = std::bind(&nlo::HadronicZ, _1, _2, p, empty_histogram_set);
-	Integrand j_integrand = std::bind(&nlo::Hadronic3, _1, _2, p, empty_histogram_set);
+	Integrand z_integrand = std::bind(
+		&nlo::HadronicZ, _1, _2, p, empty_histogram_set);
+	Integrand j_integrand = std::bind(
+		&nlo::Hadronic3, _1, _2, p, empty_histogram_set);
 
 	std::map<std::string, Integrand> z_integrands = { {"default", z_integrand} };
 	std::map<std::string, Integrand> j_integrands = { {"default", j_integrand} };
@@ -137,21 +154,27 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 
 	Integral* z_integral = new Integral(nlo_2_variables, z_integrands, v);
 	Integral* j_integral = new Integral(nlo_3_variables, j_integrands, v);
-	Integral* nlo_integral = new Integral(std::vector<Integral*>{z_integral, j_integral}, std::make_pair(0.01, 0.99));
+	Integral* nlo_integral = 
+		new Integral(std::vector<Integral*>{z_integral, j_integral}, 
+			std::make_pair(0.01, 0.99));
 	for (auto e = lo_events.begin(); e != lo_events.end(); ++e) {
 		++attempt_counter;
 		double lo_weight, lo_error;
 		double wgt = 1.0;
-		std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], lo_weight, lo_error) = *e;
+		std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], 
+			lo_weight, lo_error) = *e;
 
 //		double dNLO, err, chi;
-		auto [dNLO, err, chi] = NloHadronic(v, wgt, p, empty_histogram_set, nlo_integral);
+		auto [dNLO, err, chi] = 
+			NloHadronic(v, wgt, p, empty_histogram_set, nlo_integral);
 		
 		double y[1];
 		ranlxd(y, 1);
 		double rho = y[0] * lo_weight * 2.0;
 		if (dNLO > rho) {
-			events.push_back(std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], dNLO, err));
+			events.push_back(
+				std::tie(v["k1p"], v["phi1"], v["theta1"], v["theta2"], 
+				dNLO, err));
 		}
 		if (events.size() >= number) {
 			break;
@@ -163,7 +186,8 @@ void EventGenerator::GenerateNLOEvents(unsigned int number, Parameters* p) {
 	delete j_integral;
 	delete empty_histogram_set;
 	double efficiency = 100.0 * ((double)number) / attempt_counter;
-	std::cout << "Event generation efficiency is: " << efficiency << "%." << std::endl;
+	std::cout << "Event generation efficiency is: " 
+		<< efficiency << "%." << std::endl;
 }
 
 void EventGenerator::Print() {
@@ -171,7 +195,11 @@ void EventGenerator::Print() {
 	for (auto e = events.begin(); e != events.end(); ++e) {
 		double E1, phi1, theta1, theta2, weight, error;
 		std::tie(E1, phi1, theta1, theta2, weight, error) = *e;
-		std::cout << E1 << " " << phi1 << " " << theta1 << " " << theta2 << " " << weight  << " " << error << std::endl;
+		std::cout << E1 << " " 
+			<< phi1 << " " 
+			<< theta1 << " " 
+			<< theta2 << " " 
+			<< weight  << " " << error << std::endl;
 	}
 	std::cout << "#END: Events" << std::endl;
 }

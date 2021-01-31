@@ -93,7 +93,8 @@ double Parameters::qqb(double x1, double x2, double muf2) {
 			lhapdf->xfxQ2(+2, x1, muf2) * lhapdf->xfxQ2(-2, x2, muf2) +
 			lhapdf->xfxQ2(+3, x1, muf2) * lhapdf->xfxQ2(-3, x2, muf2) +
 			lhapdf->xfxQ2(+4, x1, muf2) * lhapdf->xfxQ2(-4, x2, muf2) +
-			lhapdf->xfxQ2(+5, x1, muf2) * lhapdf->xfxQ2(-5, x2, muf2)) / x1 / x2;
+			lhapdf->xfxQ2(+5, x1, muf2) * lhapdf->xfxQ2(-5, x2, muf2))
+		/ x1 / x2;
 }
 
 double Parameters::qbq(double x1, double x2, double muf2) {
@@ -108,7 +109,8 @@ double Parameters::gq(double x1, double x2, double muf2) {
 			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(+2, x2, muf2) +
 			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(+3, x2, muf2) +
 			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(+4, x2, muf2) +
-			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(+5, x2, muf2)) / x1 / x2;
+			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(+5, x2, muf2))
+		/ x1 / x2;
 }
 
 double Parameters::qg(double x1, double x2, double muf2) {
@@ -122,7 +124,8 @@ double Parameters::gqb(double x1, double x2, double muf2) {
 			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(-2, x2, muf2) +
 			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(-3, x2, muf2) +
 			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(-4, x2, muf2) +
-			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(-5, x2, muf2)) / x1 / x2;
+			lhapdf->xfxQ2(21, x1, muf2) * lhapdf->xfxQ2(-5, x2, muf2))
+		/ x1 / x2;
 }
 
 double Parameters::qbg(double x1, double x2, double muf2) {

@@ -85,20 +85,23 @@ PartonicContribution nlo::partonic::Coll_0 = {
 	{"gqb", &NoContribution}
 };
 
-void InitializeIntegrands(std::vector<std::string> histogram_strings, double ecms, double m) {
+void InitializeIntegrands(
+	std::vector<std::string> histogram_strings, double ecms, double m) {
 	
-	lo_variables["k1p"]     = std::make_pair(0.0, std::sqrt( ecms*ecms/4.0 - m*m ));
+	lo_variables["k1p"] = std::make_pair(0.0, std::sqrt( ecms*ecms/4.0 - m*m ));
 	lo_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
 	lo_variables["theta1"] = std::make_pair(0.0, M_PI);
 	lo_variables["theta2"] = std::make_pair(0.0, M_PI);
 
-	nlo_2_variables["k1p"]     = std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
-	nlo_2_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
+	nlo_2_variables["k1p"] = 
+		std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
+	nlo_2_variables["phi1"] = std::make_pair(-M_PI, M_PI);
 	nlo_2_variables["theta1"] = std::make_pair(0.0, M_PI);
 	nlo_2_variables["theta2"] = std::make_pair(0.0, M_PI);
 	nlo_2_variables["z"]      = std::make_pair(0.0, 1.0);
 
-	nlo_3_variables["k1p"]     = std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
+	nlo_3_variables["k1p"] = 
+		std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
 	nlo_3_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
 	nlo_3_variables["theta1"] = std::make_pair(0.0, M_PI);
 	nlo_3_variables["theta2"] = std::make_pair(0.0, M_PI);
@@ -107,101 +110,218 @@ void InitializeIntegrands(std::vector<std::string> histogram_strings, double ecm
 	nlo_3_variables["theta3"] = std::make_pair(0.0, M_PI);
 
 
-	for (auto it = parameter_sets.begin(); it != parameter_sets.end(); ++it) {
+	for (const auto& it: parameter_sets) {
 
 		std::vector<Histogram*>* hists = new std::vector<Histogram*>();
-		for (auto ij = histogram_strings.begin(); ij != histogram_strings.end(); ++ij) {
-			hists->push_back(new Histogram(*ij, it->second));
+		for (const auto& ij: histogram_strings) {
+			hists->push_back(new Histogram(ij, it.second));
 		}
 		using namespace std::placeholders;
-		histogram_sets.insert({ it->first, hists });
-		lo_integrands[it->first] = std::bind(&lo::Hadronic, _1, _2, it->second, hists);
-		lo_nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2WithBorn, _1, _2, it->second, hists);
-		nlo_2_integrands[it->first] = std::bind(&nlo::Hadronic2, _1, _2, it->second, hists);
-		nlo_3_integrands[it->first] = std::bind(&nlo::Hadronic3, _1, _2, it->second, hists);
+		histogram_sets.insert({ it.first, hists });
+		lo_integrands[it.first] = std::bind(
+			&lo::Hadronic, _1, _2, it.second, hists);
+		lo_nlo_2_integrands[it.first] = 
+			std::bind(&nlo::Hadronic2WithBorn, _1, _2, it.second, hists);
+		nlo_2_integrands[it.first] = 
+			std::bind(&nlo::Hadronic2, _1, _2, it.second, hists);
+		nlo_3_integrands[it.first] = 
+			std::bind(&nlo::Hadronic3, _1, _2, it.second, hists);
 	}
 
-	integrals["lo"]  = new std::vector<Integral*>{ new Integral(lo_variables,    lo_integrands) };
-	integrals["nlo"] = new std::vector<Integral*>{ new Integral(nlo_2_variables, nlo_2_integrands),
-												   new Integral(nlo_3_variables, nlo_3_integrands) };
-	integrals["lo+nlo"] = new std::vector<Integral*>{ new Integral(nlo_2_variables, lo_nlo_2_integrands),
-											          new Integral(nlo_3_variables, nlo_3_integrands) };
+	integrals["lo"]  = new std::vector<Integral*>{ 
+		new Integral(lo_variables,    lo_integrands) };
+	integrals["nlo"] = new std::vector<Integral*>{ 
+		new Integral(nlo_2_variables, nlo_2_integrands),
+		new Integral(nlo_3_variables, nlo_3_integrands) };
+	integrals["lo+nlo"] = new std::vector<Integral*>{
+		new Integral(nlo_2_variables, lo_nlo_2_integrands),
+		new Integral(nlo_3_variables, nlo_3_integrands) };
 }
 
-void ExecuteIntegralsAndPrintResults(std::vector<std::string> perturbation_order, int iterations, int calls) {
-	for (auto it = perturbation_order.begin(); it != perturbation_order.end(); ++it) {
+void ExecuteIntegralsAndPrintResults(
+	std::vector<std::string> perturbation_order, 
+	int iterations, 
+	int calls) {
+	for (const auto& it: perturbation_order) {
+
 		std::map<std::string, std::tuple<double, double, double>> results;
-		for (auto ij = integrals.find(*it)->second->begin(); ij != integrals.find(*it)->second->end(); ++ij) {
+		for (const auto& ij: *(integrals.find(it)->second)) {
 			std::cout << "#INITIALISING GRID" << std::endl;
-			(*ij)->ExecuteVegas(1, 30, 10000, 1);
+			ij->ExecuteVegas(1, 30, 10000, 1);
 			std::cout << "#VEGAS_START" << std::endl;
-			(*ij)->ExecuteVegas(2, iterations, calls, 1);
+			ij->ExecuteVegas(2, iterations, calls, 1);
 			std::cout << "#VEGAS_END" << std::endl;
 
-			for (auto ik = (*ij)->results_.begin(); ik != (*ij)->results_.end(); ++ik) {
+			for (const auto& ik: ij->results_) {
 				double val_new, err_new, chi_new;
 				double val_old, err_old, chi_old;
-				std::tie(val_new, err_new, chi_new) = ik->second;
-				std::tie(val_old, err_old, chi_old) = results[ik->first];
+				std::tie(val_new, err_new, chi_new) = ik.second;
+				std::tie(val_old, err_old, chi_old) = results[ik.first];
 				val_old = val_old + val_new;
 				err_old = std::sqrt(err_old * err_old + err_new * err_new);
 				chi_old = (chi_old != 0 ? 0.5 : 1.0) * (chi_old + chi_new);
-				results[ik->first] = std::make_tuple(val_old, err_old, chi_old);
+				results[ik.first] = std::make_tuple(val_old, err_old, chi_old);
 			}
 		}
-		for (auto ij = results.begin(); ij != results.end(); ++ij) {
+		for (const auto& ij: results) {
 			double val, err, chi;
-			std::tie(val, err, chi) = ij->second;
-			std::cout << "#RESULTS for " << *it << " with " << ij->first << ": "
+			std::tie(val, err, chi) = ij.second;
+			std::cout << "#RESULTS for " << it << " with " << ij.first << ": "
 				<< val << " +/- " << err
 				<< " with chi2 = " << chi << std::endl;
-			std::cout << "Histograms for parameter set: " << ij->first << std::endl;
-			for (auto ik = histogram_sets.find(ij->first)->second->begin();
-				ik != histogram_sets.find(ij->first)->second->end(); ++ik) {
-				(*ik)->Print();
-				(*ik)->Clear();
+			std::cout << "Histograms for parameter set: " 
+				<< ij.first << std::endl;
+			for (const auto& ik: *(histogram_sets.find(ij.first)->second) ) {
+				ik->Print();
+				ik->Clear();
 			}
 		}
 	}
 
 }
 
-void TestHardContributions( double ecms, double m ) {
-	IntegrationLimitsMap my_sin_limits, my_cos_limits;
-	my_sin_limits["x"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
-	my_sin_limits["y"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
-	my_sin_limits["z"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
+void RunTestFunction( double ecms, double m ) {
+	return;
+}
 
 
-	my_cos_limits["v"] = std::make_pair(0.0, M_PI / 2.0);
-	my_cos_limits["w"] = std::make_pair(-M_PI / 4.0, M_PI / 2.0);
-	my_cos_limits["x"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
-	my_cos_limits["y"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
-	my_cos_limits["z"] = std::make_pair(M_PI / 4.0, M_PI / 2.0);
-	Integrand sin_integrand = [](IntegrationVariablesMap v, double& wgt) {return std::sin(v["x"] + v["y"] + v["z"]); };
-	std::map<std::string, Integrand> my_sin_integrands = { {"default", sin_integrand} };
-	Integral sin_integral(my_sin_limits, my_sin_integrands);
-
-	Integrand cos_integrand = [](IntegrationVariablesMap v, double& wgt) {return std::pow(std::cos(v["v"] + v["w"] + v["x"] + v["y"] + v["z"]), 3); };
-	std::map<std::string, Integrand> my_cos_integrands = { {"default", cos_integrand} };
-	Integral cos_integral(my_cos_limits, my_cos_integrands);
-	Integral test_integral(std::vector<Integral*>{&sin_integral, & cos_integral}, std::make_pair(0.001, 0.999));
-	test_integral.constants1_ = IntegrationVariablesMap{ {"y", M_PI/3.0}, {"z", M_PI / 6.0} };
-	test_integral.constants2_ = IntegrationVariablesMap{ {"y", M_PI / 10.0} };
-	double calls = 1000;
-	auto [res, err, chi] = test_integral.ExecuteVegas(0, 30, (int)calls, 1);
-	double relative_error = std::abs(err / res);
-	while ( relative_error > 0.001) {
-		std::cout << "relative error: " << relative_error << std::endl;
-		calls *= 1.2;
-		auto [res, err, chi] = test_integral.ExecuteVegas(2, 1, (int)calls, 1);
-		relative_error = std::abs(err / res);
+double lo::Hadronic( 
+	std::map<std::string, double> var, 
+	double& wgt, 
+	Parameters *p, 
+	std::vector<Histogram*>* histograms) {
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+	if (PS.dGamma_ == 0) {
+		return 0.0;
 	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	for (const auto& ij : p->channels_) {
+		res += p->Fs[ij](x1, x2) * lo::partonic::Born[ij]( PS, p );
+	}
+	for (const auto& it : *histograms) {
+		it->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
+double nlo::Hadronic2WithBorn(
+	std::map<std::string, double> var, 
+	double& wgt, Parameters* p, 
+	std::vector<Histogram*>* histograms) {
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+	if (PS.dGamma_ == 0) {
+		return 0.0;
+	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	double z = PS.z_;
+	for (const auto& ij: p->channels_) {
+		res += p->Fs[ij](x1, x2) * (
+			  lo::partonic::Born[ij](PS, p)
+			+ nlo::partonic::Soft[ij](PS, p)
+			+ nlo::partonic::Virt[ij](PS, p)
+			+ nlo::partonic::Coll_0[ij](PS, p)
+			+ nlo::partonic::Coll_1[ij](PS, p));
+		res += 
+			p->Fs[ij](x1 / z, x2) * nlo::partonic::Coll_left_z[ij](PS, p)/z;
+		res += 
+			p->Fs[ij](x1, x2 / z) * nlo::partonic::Coll_right_z[ij](PS, p)/z;
+	}
+	for (const auto& it: *histograms) {
+		it->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
+double nlo::HadronicConstZ(
+	std::map<std::string, double> var, 
+	double& wgt, 
+	Parameters* p, 
+	std::vector<Histogram*>* histograms) {
+
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+	if (PS.dGamma_ == 0) {
+		return 0.0;
+	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	for (const auto& ij : p->channels_) {
+		res += p->Fs[ij](x1, x2) * ( nlo::partonic::Soft[ij](PS, p)
+								    + nlo::partonic::Virt[ij](PS, p)
+			                        + nlo::partonic::Coll_0[ij](PS, p));
+	}
+	for (const auto& it : *histograms) {
+		it->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
+double nlo::HadronicZ(
+	IntegrationVariablesMap var, 
+	double& wgt, 
+	Parameters* p, 
+	std::vector<Histogram*>* histograms) {
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+
+	if (PS.dGamma_ == 0) {
+		return 0.0;
+	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	double z = PS.z_;
+	for (const auto& ij : p->channels_) {
+		res += p->Fs[ij](x1, x2) * nlo::partonic::Coll_1[ij](PS, p);
+		res += 
+			p->Fs[ij](x1 / z, x2) * nlo::partonic::Coll_left_z[ij](PS, p) / z;
+		res += 
+			p->Fs[ij](x1, x2 / z) * nlo::partonic::Coll_right_z[ij](PS, p) / z;
+	}
+	for (const auto& it : *histograms) {
+		it->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
+double nlo::Hadronic2(
+	std::map<std::string, double> var,
+	double& wgt, 
+	Parameters* p, 
+	std::vector<Histogram*>* histograms) {
+
+	double res = 0.0;
+	PhaseSpaceGenerator PS(var, p);
+	if (PS.dGamma_ == 0) {
+		return 0.0;
+	}
+	double x1 = PS.x1_;
+	double x2 = PS.x2_;
+	double z = PS.z_;
+	for (const auto& ij : p->channels_) {
+		res += p->Fs[ij](x1, x2) * (nlo::partonic::Soft[ij](PS, p)
+								  + nlo::partonic::Virt[ij](PS, p)
+								  + nlo::partonic::Coll_0[ij](PS, p)
+								  + nlo::partonic::Coll_1[ij](PS, p));
+		res += 
+			p->Fs[ij](x1 / z, x2) * nlo::partonic::Coll_left_z[ij](PS, p)/z;
+		res +=
+			p->Fs[ij](x1, x2 / z) * nlo::partonic::Coll_right_z[ij](PS, p)/z;
+	}
+	for (const auto& it : *histograms) {
+		it->Fill(PS, res * wgt);
+	}
+	return res;
+}
+
+double nlo::Hadronic3(
+	std::map<std::string, double> var, 
+	double& wgt, Parameters* p, 
+	std::vector<Histogram*>* histograms) {
 	
-}
-
-
-double lo::Hadronic( std::map<std::string, double> var, double& wgt, Parameters *p, std::vector<Histogram*>* histograms) {
 	double res = 0.0;
 	PhaseSpaceGenerator PS(var, p);
 	if (PS.dGamma_ == 0) {
@@ -209,117 +329,12 @@ double lo::Hadronic( std::map<std::string, double> var, double& wgt, Parameters 
 	}
 	double x1 = PS.x1_;
 	double x2 = PS.x2_;
-	for (auto it = p->channels_.begin(); it != p->channels_.end(); ++it) {
-		std::string channel = *it;
-		res += p->Fs[channel](x1, x2) * lo::partonic::Born[channel]( PS, p );
+	for (const auto& ij : p->channels_) {
+		res += p->Fs[ij](x1, x2) * nlo::partonic::Hard[ij](PS, p);
 	}
-	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
-		(*it)->Fill(PS, res * wgt);
-	}
-	return res;
-}
 
-double nlo::Hadronic2WithBorn(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
-	double res = 0.0;
-	PhaseSpaceGenerator PS(var, p);
-	if (PS.dGamma_ == 0) {
-		return 0.0;
-	}
-	double x1 = PS.x1_;
-	double x2 = PS.x2_;
-	double z = PS.z_;
-	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
-		res += p->Fs[*ij](x1, x2) * (
-			  lo::partonic::Born[*ij](PS, p)
-			+ nlo::partonic::Soft[*ij](PS, p)
-			+ nlo::partonic::Virt[*ij](PS, p)
-			+ nlo::partonic::Coll_0[*ij](PS, p)
-			+ nlo::partonic::Coll_1[*ij](PS, p));
-		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p)/z;
-		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p)/z;
-	}
-	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
-		(*it)->Fill(PS, res * wgt);
-	}
-	return res;
-}
-
-double nlo::HadronicConstZ(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
-	double res = 0.0;
-	PhaseSpaceGenerator PS(var, p);
-	if (PS.dGamma_ == 0) {
-		return 0.0;
-	}
-	double x1 = PS.x1_;
-	double x2 = PS.x2_;
-	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
-		res += p->Fs[*ij](x1, x2) * ( nlo::partonic::Soft[*ij](PS, p)
-								    + nlo::partonic::Virt[*ij](PS, p)
-			                        + nlo::partonic::Coll_0[*ij](PS, p));
-	}
-	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
-		(*it)->Fill(PS, res * wgt);
-	}
-	return res;
-}
-
-double nlo::HadronicZ(IntegrationVariablesMap var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
-	double res = 0.0;
-	PhaseSpaceGenerator PS(var, p);
-
-	if (PS.dGamma_ == 0) {
-		return 0.0;
-	}
-	double x1 = PS.x1_;
-	double x2 = PS.x2_;
-	double z = PS.z_;
-	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
-		res += p->Fs[*ij](x1, x2) * nlo::partonic::Coll_1[*ij](PS, p);
-		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p) / z;
-		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p) / z;
-	}
-	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
-		(*it)->Fill(PS, res * wgt);
-	}
-	return res;
-}
-
-double nlo::Hadronic2(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
-	double res = 0.0;
-	PhaseSpaceGenerator PS(var, p);
-	if (PS.dGamma_ == 0) {
-		return 0.0;
-	}
-	double x1 = PS.x1_;
-	double x2 = PS.x2_;
-	double z = PS.z_;
-	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
-		res += p->Fs[*ij](x1, x2) * (nlo::partonic::Soft[*ij](PS, p)
-			+ nlo::partonic::Virt[*ij](PS, p)
-			+ nlo::partonic::Coll_0[*ij](PS, p)
-			+ nlo::partonic::Coll_1[*ij](PS, p));
-		res += p->Fs[*ij](x1 / z, x2) * nlo::partonic::Coll_left_z[*ij](PS, p)/z;
-		res += p->Fs[*ij](x1, x2 / z) * nlo::partonic::Coll_right_z[*ij](PS, p)/z;
-	}
-	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
-		(*it)->Fill(PS, res * wgt);
-	}
-	return res;
-}
-
-double nlo::Hadronic3(std::map<std::string, double> var, double& wgt, Parameters* p, std::vector<Histogram*>* histograms) {
-	double res = 0.0;
-	PhaseSpaceGenerator PS(var, p);
-	if (PS.dGamma_ == 0) {
-		return 0.0;
-	}
-	double x1 = PS.x1_;
-	double x2 = PS.x2_;
-	for (auto ij = p->channels_.begin(); ij != p->channels_.end(); ++ij) {
-		res += p->Fs[*ij](x1, x2) * nlo::partonic::Hard[*ij](PS, p);
-	}
-	for (auto it = histograms->begin(); it != histograms->end(); ++it) {
-		(*it)->Fill(PS, res * wgt);
+	for (const auto& it : *histograms) {
+		it->Fill(PS, res * wgt);
 	}
 	return res;
 }
@@ -327,7 +342,9 @@ double lo::partonic::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double s	  = PS.s_;
 	double dGamma = PS.dGamma_;
 	double coup   = p->GetSquaredGs();
-	double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+	double result = 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2)
+		* sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 	
 	return result;
 }
@@ -336,14 +353,18 @@ double lo::partonic::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double s      = PS.s_;
 	double dGamma = PS.dGamma_;
 	double coup   = p->GetSquaredGs();
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+	return 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2) 
+		* suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
 double lo::partonic::qbq(PhaseSpaceGenerator PS, Parameters * p) {
 	double s = PS.s_;
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
-	double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * suub_ttb_(PS.p2_, PS.p1_, PS.k1_, PS.k2_) * kPbarn;
+	double result = 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2) 
+		* suub_ttb_(PS.p2_, PS.p1_, PS.k1_, PS.k2_) * kPbarn;
 	//std::cout << result << std::endl;
 	return result;
 }
@@ -364,7 +385,8 @@ double nlo::partonic::soft::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double beta = (x2 - x1) / (x1 + x2);
 	double gamma = 1.0 / std::sqrt(1.0 - beta * beta);
 	double b = std::sqrt(1.0 - 4.0 * m2 / s), b2 = b * b;
-	double y = 1.0 / b * (2.0 * PS.k1_[3] / std::sqrt(s) / gamma + beta), y2 = y * y;
+	double y = 
+		1.0 / b * (2.0 * PS.k1_[3] / std::sqrt(s) / gamma + beta), y2 = y * y;
 	double x = (1.0 - b) / (1.0 + b);
 
 	divTerm Ceps = { 0.0, 0.0, 1.0,
@@ -393,9 +415,10 @@ double nlo::partonic::soft::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	function<divTerm(double)> SC = [s, b, b2, S](double y) {
 		return (divTerm) {
 			0.0,
-				Nc / 2.0 * (4.0 - Nc * Nc * std::pow(1.0 + b * y, 2))
-				* ln(std::pow(1.0 - b * y, 2) / (1.0 - b2)),
-				-Nc / 2.0 * (4.0 - Nc * Nc * std::pow(1.0 + b * y, 2)) * S(y), 0.0, 0.0
+			Nc / 2.0 * (4.0 - Nc * Nc * std::pow(1.0 + b * y, 2))
+			* ln(std::pow(1.0 - b * y, 2) / (1.0 - b2)),
+			-Nc / 2.0 * (4.0 - Nc * Nc * std::pow(1.0 + b * y, 2)) * S(y),
+				0.0, 0.0
 		};
 	};
 
@@ -403,7 +426,8 @@ double nlo::partonic::soft::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double Mgg = 0.0, Mtgg = 0.0, Agg = 0.0;
 
 	Agg =
-		1.0 + 2.0 * b2 * (1.0 - y2) - std::pow(b, 4) * (1.0 + std::pow(1.0 - y2, 2));
+		1.0 + 2.0 * b2 * (1.0 - y2) - std::pow(b, 4)
+		* (1.0 + std::pow(1.0 - y2, 2));
 
 	Mtgg = 4.0 * M_PI * M_PI * std::pow(alpha_s, 2) * (Nc * Nc - 1.0)
 		/ Nc / std::pow(1.0 - b2 * y2, 2) * Agg;
@@ -568,8 +592,13 @@ double nlo::partonic::coll_left_z::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double Feps = 2.0 * mur2 / s / xmin * z;
 	double Ceps = mur2 / muf2;
 	double z2 = z * z;
-	double result = (-2 * Nc * std::pow(1 - z + z2, 2) * (ln(Ceps) - ln(Feps) + 2 * ln(1 - z))) / ((-1 + z) * z);
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * result * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+	double result = 
+		(-2 * Nc * std::pow(1 - z + z2, 2)
+			* (ln(Ceps) - ln(Feps) + 2 * ln(1 - z))) / ((-1 + z) * z);
+	return 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2)
+		* alpha_s / 2.0 / M_PI * result
+		* sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
 double nlo::partonic::coll_left_z::qqb(PhaseSpaceGenerator PS, Parameters* p) {
@@ -585,9 +614,13 @@ double nlo::partonic::coll_left_z::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double Ceps = mur2 / muf2;
 	double Feps = 2.0 * mur2 / s / xmin * z;
 	double z2 = z * z;
-	double result = -(((1 - 2 * z + z2 + (1 + z2) * ln(Ceps) - (1 + z2) * ln(Feps) +
+	double result =
+		-(((1 - 2 * z + z2 + (1 + z2) * ln(Ceps) - (1 + z2) * ln(Feps) +
 		2 * ln(1 - z) + 2 * z2 * ln(1 - z))) / (-1 + z));
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * CF * result * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+	return 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2)
+		* alpha_s / 2.0 / M_PI * CF * result
+		* suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
 double nlo::partonic::coll_left_z::qg(PhaseSpaceGenerator PS, Parameters* p) {
@@ -601,16 +634,19 @@ double nlo::partonic::coll_left_z::qg(PhaseSpaceGenerator PS, Parameters* p) {
 	double xmin = p->GetCutParameter();
 	double alpha_s = p->GetAlphaS();
 	double gg = sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_);
-	divTerm Feps = { 0.0, 0.0, 1.0, ln(2.0 * mur2 / s / xmin / std::pow(1 - z,2) * z), 0.0 };
-	divTerm result = -alpha_s / 2.0 / M_PI * Feps.qEps() *
-		gg * CF * (divTerm) { 0.0, 0.0, (1.0 + std::pow(1.0 - z, 2)) / z, -z, 0.0 };
+	divTerm Feps = 
+	{ 0.0, 0.0, 1.0, ln(2.0 * mur2 / s / xmin / std::pow(1 - z,2) * z), 0.0 };
+	divTerm result = -alpha_s / 2.0 / M_PI * Feps.qEps() * gg * CF
+		* (divTerm) { 0.0, 0.0, (1.0 + std::pow(1.0 - z, 2)) / z, -z, 0.0 };
 
 
 	divTerm FepsC = { 0.0, 0.0, 1.0, ln(mur2 / muf2), 0.0 };
 	double Pgq = CF * (1.0 + std::pow(1 - z, 2)) / z;
 	divTerm resultC = alpha_s / 2.0 / M_PI * FepsC.qEps() * gg * Pgq;
 
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * (result + resultC).eps0 * kPbarn;
+	return 
+		1.0 / 2.0 / s * dGamma
+		* std::pow(coup, 2) * (result + resultC).eps0 * kPbarn;
 }
 
 double nlo::partonic::coll_right_z::qg(PhaseSpaceGenerator PS, Parameters* p) {
@@ -626,15 +662,19 @@ double nlo::partonic::coll_right_z::qg(PhaseSpaceGenerator PS, Parameters* p) {
 	double qq = suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_);
 
 	divTerm Feps = { 0.0, 0.0, 1.0, ln(2.0 * mur2 / s / xmin / std::pow(1 - z,2) * z), 0.0 };
-	divTerm result = -alpha_s / 2.0 / M_PI * Feps.qEps() *
-		qq * 0.5 * (divTerm) { 0.0, 0.0, z* z + std::pow(1.0 - z, 2), z* z + std::pow(1.0 - z, 2) - 1.0, 0.0 };
+	divTerm result = -alpha_s / 2.0 / M_PI * Feps.qEps() * qq * 0.5
+		* (divTerm) { 0.0, 0.0, 
+		z* z + std::pow(1.0 - z, 2), z* z + std::pow(1.0 - z, 2) - 1.0, 
+		0.0 };
 
 
 	divTerm FepsC = { 0.0, 0.0, 1.0, ln(mur2 / muf2), 0.0 };
 	double Pqg = 0.5 * (z * z + std::pow(1 - z, 2));
 	divTerm resultC = alpha_s / 2.0 / M_PI * FepsC.qEps() * qq * Pqg;
 
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * (result + resultC).eps0 * kPbarn;
+	return 
+		1.0 / 2.0 / s * dGamma
+		* std::pow(coup, 2) * (result + resultC).eps0 * kPbarn;
 }
 
 double nlo::partonic::coll_1::gg(PhaseSpaceGenerator PS, Parameters* p) {
@@ -651,8 +691,12 @@ double nlo::partonic::coll_1::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double Ceps = mur2 / muf2;
 	double m2 = std::pow(p->GetTopQuarkMass(), 2);
 	double x = 4.0 * m2 / s;
-	double result = z > x ? 2 * Nc * (ln(Ceps) - ln(Feps) + 2 * ln(1 - z)) / (-1 + z) : 0.0;
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * result * 2 * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+	double result = 
+		z > x ? 2 * Nc * (ln(Ceps) - ln(Feps) + 2 * ln(1 - z)) / (-1 + z) : 0.0;
+	return 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2)
+		* alpha_s / 2.0 / M_PI * result * 2
+		* sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
 double nlo::partonic::coll_1::qqb(PhaseSpaceGenerator PS, Parameters* p) {
@@ -669,8 +713,12 @@ double nlo::partonic::coll_1::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double Ceps = mur2 / muf2;
 	double Feps = 2.0 * mur2 / s / xmin;
 	double x = 4.0 * m2 / s;
-	double result = z > x ? (4 * (ln(Ceps) - ln(Feps) + 2 * ln(1 - z))) / (-1 + z) : 0.0;
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * CF * result * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+	double result = 
+		z > x ? (4 * (ln(Ceps) - ln(Feps) + 2 * ln(1 - z))) / (-1 + z) : 0.0;
+	return 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2)
+		* alpha_s / 2.0 / M_PI * CF * result
+		* suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
 double nlo::partonic::coll_0::gg(PhaseSpaceGenerator PS, Parameters* p) {
@@ -687,9 +735,14 @@ double nlo::partonic::coll_0::gg(PhaseSpaceGenerator PS, Parameters* p) {
 
 	double x = 4.0 * m2 / s;
 	divTerm result = { 0.0, (2 + 11 * Nc - 2 * NF + 12 * Nc * ln(xmin)) / 6.,
-	(ln(Ceps) * (2 + 11 * Nc - 2 * NF + 12 * Nc * ln(1 - x)) -
-		 12 * Nc * (ln(Feps) * (ln(1 - x) - ln(xmin)) - ln2(1 - x) + ln2(xmin))) / 6., 0.0, 0.0 };
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s / 2.0 / M_PI * result.eps0 * 2 * sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+		(ln(Ceps) * (2 + 11 * Nc - 2 * NF + 12 * Nc * ln(1 - x))
+		- 12 * Nc * (ln(Feps) * (ln(1 - x) - ln(xmin))
+			- ln2(1 - x) + ln2(xmin)))
+		/ 6., 0.0, 0.0 };
+	return 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2)
+		* alpha_s / 2.0 / M_PI * result.eps0 * 2
+		* sgg_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
 double nlo::partonic::coll_0::qqb(PhaseSpaceGenerator PS, Parameters* p) {
@@ -705,8 +758,12 @@ double nlo::partonic::coll_0::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double Feps = 2.0 * mur2 / s / xmin;
 	double x = 4.0 * m2 / s;
 	divTerm result = { 0.0,  3.0 + 4.0 * ln(xmin),
-	ln(Ceps) * (3 + 4 * ln(1 - x)) + 4 * (ln(Feps) * (-ln(1 - x) + ln(xmin)) + ln2(1 - x) - ln2(xmin)), 0.0, 0.0 };
-	return 1.0 / 2.0 / s * dGamma * std::pow(coup, 2) * alpha_s/2.0 / M_PI * CF * result.eps0 * suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
+	ln(Ceps) * (3 + 4 * ln(1 - x)) + 4 * (ln(Feps) * (-ln(1 - x) + ln(xmin))
+		+ ln2(1 - x) - ln2(xmin)), 0.0, 0.0 };
+	return 
+		1.0 / 2.0 / s * dGamma * std::pow(coup, 2)
+		* alpha_s/2.0 / M_PI * CF * result.eps0
+		* suub_ttb_(PS.p1_, PS.p2_, PS.k1_, PS.k2_) * kPbarn;
 }
 
 double nlo::partonic::hard::gg(PhaseSpaceGenerator PS, Parameters* p) {
@@ -714,7 +771,8 @@ double nlo::partonic::hard::gg(PhaseSpaceGenerator PS, Parameters* p) {
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
 	if (PS.not_soft_ && PS.not_collinear_) {
-		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sgg_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
+		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3)
+			* sgg_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
 			return 0.0;
 		}
@@ -732,7 +790,8 @@ double nlo::partonic::hard::qqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
 	if (PS.not_soft_ && PS.not_collinear_) {
-		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * suub_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
+		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3)
+			* suub_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
 			return 0.0;
 		}
@@ -750,7 +809,8 @@ double nlo::partonic::hard::qbq(PhaseSpaceGenerator PS, Parameters* p) {
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
 	if (PS.not_soft_ && PS.not_collinear_) {
-		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * subu_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
+		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3)
+			* subu_ttbg_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
 			return 0.0;
 		}
@@ -768,7 +828,8 @@ double nlo::partonic::hard::qg(PhaseSpaceGenerator PS, Parameters* p) {
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
-		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sug_ttbu_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
+		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3)
+			* sug_ttbu_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
 			return 0.0;
 		}
@@ -786,7 +847,8 @@ double nlo::partonic::hard::qbg(PhaseSpaceGenerator PS, Parameters* p) {
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
-		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * subg_ttbub_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
+		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3)
+			* subg_ttbub_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
 			return 0.0;
 		}
@@ -804,7 +866,8 @@ double nlo::partonic::hard::gq(PhaseSpaceGenerator PS, Parameters* p) {
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
-		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sgu_ttbu_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
+		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3)
+			* sgu_ttbu_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
 			return 0.0;
 		}
@@ -822,7 +885,8 @@ double nlo::partonic::hard::gqb(PhaseSpaceGenerator PS, Parameters* p) {
 	double dGamma = PS.dGamma_;
 	double coup = p->GetSquaredGs();
 	if (PS.not_collinear_) {
-		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3) * sgub_ttbub_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
+		double result = 1.0 / 2.0 / s * dGamma * std::pow(coup, 3)
+			* sgub_ttbub_(PS.p1_, PS.p2_, PS.k1_, PS.k2_, PS.k3_) * kPbarn;
 		if (std::isnan(result)) {
 			return 0.0;
 		}

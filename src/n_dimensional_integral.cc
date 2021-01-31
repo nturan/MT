@@ -1,6 +1,8 @@
 #include "n_dimensional_integral.h"
 
-Integral::Integral(std::vector<Integral*> integrals, std::pair<double, double> ratio) {
+Integral::Integral(
+    std::vector<Integral*> integrals, std::pair<double, double> ratio) {
+
     if (integrals.size() != 2) {
         std::cerr << "combined integration with " << integrals.size()
             << " has not been implemented yet..." << std::endl;
@@ -22,7 +24,9 @@ Integral::Integral(std::vector<Integral*> integrals, std::pair<double, double> r
 }
 
 Integral::Integral( 
-    IntegrationLimitsMap limits, std::map<std::string, Integrand> integrands, IntegrationVariablesMap constants ){
+    IntegrationLimitsMap limits, 
+    std::map<std::string, Integrand> integrands, 
+    IntegrationVariablesMap constants ){
     limits_ = limits;
     constants_ = constants;
     dimension_ = limits.size() - constants.size();
@@ -62,7 +66,8 @@ std::tuple<double, double, double> Integral::ExecuteVegas(
            break;
   case 2: integrator_->vegas2();
            break;
-  default: std::cout << "wrong vegas entry level! must be 0,1 or 2" << std::endl;
+  default: std::cout 
+      << "wrong vegas entry level! must be 0,1 or 2" << std::endl;
             exit(0);
             break;
   }       
@@ -96,7 +101,8 @@ double Integral::f(double x[],double wgt, double res[]) {
   double jac = 1.0;
   
 
-  IntegrationVariablesMap variables = MapToHyperCube(limits_, x, jac, constants_);
+  IntegrationVariablesMap variables = 
+      MapToHyperCube(limits_, x, jac, constants_);
 
   int i = 0;
   int number_of_calls = integrator_->getcalls();
@@ -121,24 +127,29 @@ double Integral::CombinedIntegrationF(double x[5], double wgt, double res[]) {
         x2.push_back(x[i]);
     }
 
-    IntegrationVariablesMap variables1 = MapToHyperCube(limits1_, &x1[0], jac1, constants1_);
-    IntegrationVariablesMap variables2 = MapToHyperCube(limits2_, &x2[0], jac2, constants2_);
+    IntegrationVariablesMap variables1 = 
+        MapToHyperCube(limits1_, &x1[0], jac1, constants1_);
+    IntegrationVariablesMap variables2 = 
+        MapToHyperCube(limits2_, &x2[0], jac2, constants2_);
 
     bool performing_first_integration = x[dimension_ - 1] < ratio_.first;
 
     int number_of_calls = integrator_->getcalls();
     double weight = wgt / number_of_calls / iterations_;
     if (performing_first_integration) {
-        res[0] = integrands1_["default"](variables1, weight) * jac1 / ratio_.first;
+        res[0] = integrands1_["default"](variables1, weight)
+            * jac1 / ratio_.first;
     }
     else {
-        res[0] = integrands2_["default"](variables2, weight) * jac2 / ratio_.second;
+        res[0] = integrands2_["default"](variables2, weight)
+            * jac2 / ratio_.second;
     }
     return res[0];
 }
 
 IntegrationVariablesMap MapToHyperCube(
-    IntegrationLimitsMap limits, double x[], double& jacobian, IntegrationVariablesMap constants)
+    IntegrationLimitsMap limits,
+    double x[], double& jacobian, IntegrationVariablesMap constants)
 {
     IntegrationVariablesMap variables;
     double jac = jacobian;

@@ -1,7 +1,9 @@
 #include "phase_space_generator.h"
 
 
-PhaseSpaceGenerator::PhaseSpaceGenerator(std::map<std::string, double> var, Parameters* p)
+PhaseSpaceGenerator::PhaseSpaceGenerator(
+	std::map<std::string, double> var, 
+	Parameters* p)
 {
 	m_ = p->GetTopQuarkMass();
 	ecms_ = p->GetColliderEnergy();
@@ -32,7 +34,8 @@ PhaseSpaceGenerator::PhaseSpaceGenerator(std::map<std::string, double> var, Para
 
 void PhaseSpaceGenerator::generatePS2(std::map<std::string, double> var)
 {
-	double k1p = var["k1p"], phi1 = var["phi1"], theta1 = var["theta1"], theta2 = var["theta2"];
+	double k1p = var["k1p"], 
+		phi1 = var["phi1"], theta1 = var["theta1"], theta2 = var["theta2"];
 
 	double eta1 = -std::log(std::tan(theta1 / 2.0));
 	double eta2 = -std::log(std::tan(theta2 / 2.0));
@@ -45,7 +48,7 @@ void PhaseSpaceGenerator::generatePS2(std::map<std::string, double> var)
 	double Ecms = ecms_;
 	double Shad = std::pow(Ecms, 2);
 
-//	double k1p = std::sqrt((E1 * E1 - m2)) / std::cosh(eta1);   /* transversal momenta      */
+//	double k1p = std::sqrt((E1 * E1 - m2)) / std::cosh(eta1);   
 	double E1 = std::sqrt(std::pow(k1p * std::cosh(eta1), 2) + m2);
 
 	double E2 = std::sqrt(m2 + std::pow(k1p * std::cosh(eta2), 2));
@@ -63,13 +66,14 @@ void PhaseSpaceGenerator::generatePS2(std::map<std::string, double> var)
 		return;
 	}
 
-	double beta = std::sqrt(1.0 - m2 / E2 / E2);
 
 	double sinPhi = std::sin(phi1);
 	double cosPhi = std::cos(phi1);
 
 	/* the total jacobian                                                         */
-	dGamma_ = 1.0 / 8.0 / M_PI / M_PI / E1 / E2 * k1p * k1p * k1p * std::cosh(eta1) * std::cosh(eta2) / Shad * dEta1 * dEta2;
+	dGamma_ = 1.0 / 8.0 / M_PI / M_PI / E1 / E2
+		* k1p * k1p * k1p * std::cosh(eta1) * std::cosh(eta2) / Shad
+		* dEta1 * dEta2;
 
 
 
@@ -104,7 +108,8 @@ void PhaseSpaceGenerator::generatePS2(std::map<std::string, double> var)
 
 void PhaseSpaceGenerator::generatePS3(std::map<std::string, double> var) {
 
-	double k1p = var["k1p"], phi1 = var["phi1"], theta1 = var["theta1"], theta2 = var["theta2"];
+	double k1p = var["k1p"], phi1 = var["phi1"], theta1 = var["theta1"], 
+		theta2 = var["theta2"];
 	double k3p = var["k3p"], phi3 = var["phi3"], theta3 = var["theta3"];
 	double eta1 = -std::log(std::tan(theta1 / 2.0));
 	double eta2 = -std::log(std::tan(theta2 / 2.0));
@@ -124,7 +129,8 @@ void PhaseSpaceGenerator::generatePS3(std::map<std::string, double> var) {
 	double E1 = std::sqrt(std::pow(k1p * std::cosh(eta1), 2) + m2);
 	//double k3p = E3 / std::cosh(eta3);
 	double E3 = k3p * std::cosh(eta3);
-	double k2p = std::sqrt(k1p * k1p + k3p * k3p + 2.0 * k1p * k3p * std::cos(phi1 - phi3));
+	double k2p = 
+		std::sqrt(k1p * k1p + k3p * k3p + 2.0 * k1p * k3p * std::cos(phi1 - phi3));
 
 	/* azimuth angle for k2 is determined by k1 and k3. atan2 function delivers   */
 	/* arctan in every quadrant.                                                  */
@@ -141,16 +147,23 @@ void PhaseSpaceGenerator::generatePS3(std::map<std::string, double> var) {
 		return;
 	}
 
-	double k1[4] = { E1, k1p * std::cos(phi1), k1p * std::sin(phi1), k1p * std::sinh(eta1) };
-	double k2[4] = { E2,-k2p * std::cos(phi2),-k2p * std::sin(phi2), k2p * std::sinh(eta2) };
-	double k3[4] = { E3, k3p * std::cos(phi3), k3p * std::sin(phi3), k3p * std::sinh(eta3) };
+	double k1[4] = 
+	{ E1, k1p * std::cos(phi1), k1p * std::sin(phi1), k1p * std::sinh(eta1) };
+	double k2[4] = 
+	{ E2,-k2p * std::cos(phi2),-k2p * std::sin(phi2), k2p * std::sinh(eta2) };
+	double k3[4] = 
+	{ E3, k3p * std::cos(phi3), k3p * std::sin(phi3), k3p * std::sinh(eta3) };
 
-	double beta = std::sqrt(1.0 - m2 / E2 / E2);
+
 	/* total jacobian                                                             */
 //	double jac = 1.0 / std::pow(2 * M_PI, 5) / 4.0 / Shad * k1p / std::cosh(eta1)
 //		* beta * k3p / std::cosh(eta3) * dEta1 * dEta2 * dEta3;
 
-	double jac = 1.0 / std::pow(2.0 * M_PI, 5) * 2.0 / Shad / 2.0 / E1 / 2.0 / E2 / 2.0 / E3 * k1p * k1p * k2p * k3p * k3p * std::cosh(eta1) * std::cosh(eta2) * std::cosh(eta3) * dEta1 * dEta2 * dEta3;
+	double jac = 
+		1.0 / std::pow(2.0 * M_PI, 5) * 2.0 / Shad / 2.0 / E1 / 2.0 / E2 / 2.0 / E3
+		* k1p * k1p * k2p * k3p * k3p
+		* std::cosh(eta1) * std::cosh(eta2) * std::cosh(eta3)
+		* dEta1 * dEta2 * dEta3;
 
 	x1_ = (k1[0] + k2[0] + k3[0] + k1[3] + k2[3] + k3[3]) / Ecms;
 	x2_ = (k1[0] + k2[0] + k3[0] - k1[3] - k2[3] - k3[3]) / Ecms;
@@ -175,8 +188,8 @@ void PhaseSpaceGenerator::generatePS3(std::map<std::string, double> var) {
 	k1_[0] = k1[0];  k1_[1] = k1[1]; k1_[2] = k1[2]; k1_[3] = k1[3];
 	k2_[0] = k2[0];  k2_[1] = k2[1]; k2_[2] = k2[2]; k2_[3] = k2[3];
 	k3_[0] = k3[0];  k3_[1] = k3[1]; k3_[2] = k3[2]; k3_[3] = k3[3];
-
-	double b = (x1_ - x2_) / (x1_ + x2_);  /* beta factor of the lorentz boost to CMS     */
+	/* beta factor of the lorentz boost to CMS     */
+	double b = (x1_ - x2_) / (x1_ + x2_);  
 	double p1s[4], k3s[4];
 	boostZ(p1_, b, p1s);                          /* boost in z direction only */
 	boostZ(k3_, b, k3s);
@@ -197,7 +210,8 @@ void PhaseSpaceGenerator::generatePS3(std::map<std::string, double> var) {
 
 void PhaseSpaceGenerator::generatePS3_E3(std::map<std::string, double> var) {
 
-	double k1p = var["k1p"], phi1 = var["phi1"], theta1 = var["theta1"], theta2 = var["theta2"];
+	double k1p = var["k1p"], phi1 = var["phi1"], theta1 = var["theta1"],
+		theta2 = var["theta2"];
 	double E3 = std::exp(var["E3"]), phi3 = var["phi3"], theta3 = var["theta3"];
 	double eta1 = -std::log(std::tan(theta1 / 2.0));
 	double eta2 = -std::log(std::tan(theta2 / 2.0));
@@ -217,7 +231,8 @@ void PhaseSpaceGenerator::generatePS3_E3(std::map<std::string, double> var) {
 	double E1 = std::sqrt(std::pow(k1p * std::cosh(eta1), 2) + m2);
 	double k3p = E3 / std::cosh(eta3);
 //	double E3 = k3p * std::cosh(eta3);
-	double k2p = std::sqrt(k1p * k1p + k3p * k3p + 2.0 * k1p * k3p * std::cos(phi1 - phi3));
+	double k2p = 
+		std::sqrt(k1p * k1p + k3p * k3p + 2.0 * k1p * k3p * std::cos(phi1 - phi3));
 
 	/* azimuth angle for k2 is determined by k1 and k3. atan2 function delivers   */
 	/* arctan in every quadrant.                                                  */
@@ -234,16 +249,22 @@ void PhaseSpaceGenerator::generatePS3_E3(std::map<std::string, double> var) {
 		return;
 	}
 
-	double k1[4] = { E1, k1p * std::cos(phi1), k1p * std::sin(phi1), k1p * std::sinh(eta1) };
-	double k2[4] = { E2,-k2p * std::cos(phi2),-k2p * std::sin(phi2), k2p * std::sinh(eta2) };
-	double k3[4] = { E3, k3p * std::cos(phi3), k3p * std::sin(phi3), k3p * std::sinh(eta3) };
+	double k1[4] = 
+	{ E1, k1p * std::cos(phi1), k1p * std::sin(phi1), k1p * std::sinh(eta1) };
+	double k2[4] = 
+	{ E2,-k2p * std::cos(phi2),-k2p * std::sin(phi2), k2p * std::sinh(eta2) };
+	double k3[4] = 
+	{ E3, k3p * std::cos(phi3), k3p * std::sin(phi3), k3p * std::sinh(eta3) };
 
-	double beta = std::sqrt(1.0 - m2 / E2 / E2);
 	/* total jacobian                                                             */
 //	double jac = 1.0 / std::pow(2 * M_PI, 5) / 4.0 / Shad * k1p / std::cosh(eta1)
 //		* beta * k3p / std::cosh(eta3) * dEta1 * dEta2 * dEta3;
 
-	double jac = 1.0 / std::pow(2.0 * M_PI, 5) * 2.0 / Shad / 2.0 / E1 / 2.0 / E2 / 2.0 / E3 * k1p * k1p * k2p * k3p * k3p * E3 * std::cosh(eta1) * std::cosh(eta2) * dEta1 * dEta2 * dEta3;
+	double jac = 
+		1.0 / std::pow(2.0 * M_PI, 5) * 2.0 / Shad / 2.0 / E1 / 2.0 / E2 / 2.0 / E3
+		* k1p * k1p * k2p * k3p * k3p * E3
+		* std::cosh(eta1) * std::cosh(eta2)
+		* dEta1 * dEta2 * dEta3;
 
 	x1_ = (k1[0] + k2[0] + k3[0] + k1[3] + k2[3] + k3[3]) / Ecms;
 	x2_ = (k1[0] + k2[0] + k3[0] - k1[3] - k2[3] - k3[3]) / Ecms;
@@ -269,7 +290,8 @@ void PhaseSpaceGenerator::generatePS3_E3(std::map<std::string, double> var) {
 	k2_[0] = k2[0];  k2_[1] = k2[1]; k2_[2] = k2[2]; k2_[3] = k2[3];
 	k3_[0] = k3[0];  k3_[1] = k3[1]; k3_[2] = k3[2]; k3_[3] = k3[3];
 
-	double b = (x1_ - x2_) / (x1_ + x2_);  /* beta factor of the lorentz boost to CMS     */
+	/* beta factor of the lorentz boost to CMS     */
+	double b = (x1_ - x2_) / (x1_ + x2_);  
 	double p1s[4], k3s[4];
 	boostZ(p1_, b, p1s);                          /* boost in z direction only */
 	boostZ(k3_, b, k3s);
