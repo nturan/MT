@@ -23,22 +23,25 @@ std::tuple<double, double, double> NloHadronic(
 	auto [dNLOint, integration_error, chi] =
 		nlo_integral->ExecuteVegas(0, 30, (int)calls, 1);
 	double dNLO = dNLOint + dNLOconst + dLO;
+	/* since other contributions are practically without error */
+	double error = integration_error; 
 	double relative_nlo_correction = std::abs( (dNLO - dLO) / dLO );
-	double relative_nlo_error = std::abs(integration_error / dNLO);
+	double relative_nlo_error = std::abs(error / dNLO);
 	while ( relative_nlo_error / relative_nlo_correction > accuracy ) {
 		calls *= 1.5;
 		auto [dNLOint, integration_error, chi] = 
 			nlo_integral->ExecuteVegas(2, 1, (int)calls, 1);
 		dNLO = dNLOint + dNLOconst + dLO;
+		error = integration_error;
 		relative_nlo_correction = std::abs((dNLO - dLO) / dLO);
-		relative_nlo_error = std::abs(integration_error / dNLO);
+		relative_nlo_error = std::abs(error / dNLO);
 		std::cout << "     relative nlo error: " 
 			<< relative_nlo_error << std::endl;
 		std::cout << "relative nlo correction: " 
 			<< relative_nlo_correction << std::endl;
 	}
 
-	return std::tie(dNLO, integration_error, chi);
+	return std::tie(dNLO, error, chi);
 }
 
 EventGenerator::EventGenerator(){}
