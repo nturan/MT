@@ -45,9 +45,9 @@ int main( int argc, char* argv[] ) {
 			cxxopts::value<int>()->default_value("0"))
 		("nlo_events", "Number of NLO Events", 
 			cxxopts::value<int>()->default_value("0"))
-		("evaluate_lo_events", "Evaluate LO events", 
+		("evaluate_lo_event", "Evaluate LO events", 
 			cxxopts::value<std::string>()->default_value(""))
-		("evaluate_nlo_events", "Evaluate NLO events", 
+		("evaluate_nlo_event", "Evaluate NLO events", 
 			cxxopts::value<std::string>()->default_value(""))
 		("test", "Perform test routines", 
 			cxxopts::value<bool>()->default_value("false"))
@@ -79,10 +79,10 @@ int main( int argc, char* argv[] ) {
 
 	int number_of_lo_events = result["lo_events"].as<int>();
 	int number_of_nlo_events = result["nlo_events"].as<int>();
-	std::string evaluate_lo_events = 
-		result["evaluate_lo_events"].as<std::string>();
-	std::string evaluate_nlo_events = 
-		result["evaluate_nlo_events"].as<std::string>();
+	std::string evaluate_lo_event = 
+		result["evaluate_lo_event"].as<std::string>();
+	std::string evaluate_nlo_event = 
+		result["evaluate_nlo_event"].as<std::string>();
 	bool running_test = result["test"].as<bool>();
 	unsigned int iseed = result["seed"].as<unsigned int>();
 
@@ -137,15 +137,33 @@ int main( int argc, char* argv[] ) {
 		eg->Print();
 		delete eg;
 	}
-	if (evaluate_lo_events != "") {
-		EventGenerator* eg = new EventGenerator(evaluate_lo_events);
-		EvaluateLoEvents(eg, parameter_sets["default"]);
-		delete eg;
-	}
-	if (evaluate_nlo_events != "") {
-		EventGenerator* eg = new EventGenerator(evaluate_nlo_events);
-		EvaluateNloEvents(eg, parameter_sets["default"]);
-		delete eg;
+	if (evaluate_lo_event != "") {
+		std::string s;
+		std::istringstream event_variables(evaluate_lo_event);
+		std::vector<double> var;
+		while (std::getline(event_variables, s, ',')) {
+			if (s.size() > 0) {
+				var.push_back(std::stod(s));
+			}
+		}
+		double zero = 0.0;
+		Event e = std::tie(var.at(0), var.at(1), var.at(2), var.at(3), zero, zero);
+		
+		EvaluateLoEvents(e, parameter_sets["default"]);
+		}
+	if (evaluate_nlo_event != "") {
+		std::string s;
+		std::istringstream event_variables(evaluate_nlo_event);
+		std::vector<double> var;
+		while (std::getline(event_variables, s, ',')) {
+			if (s.size() > 0) {
+				var.push_back(std::stod(s));
+			}
+		}
+		double zero = 0.0;
+		Event e = std::tie(var.at(0), var.at(1), var.at(2), var.at(3), zero, zero);
+		EvaluateNloEvents(e, parameter_sets["default"]);
+		
 	}
 	
 

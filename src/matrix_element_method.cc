@@ -1,6 +1,6 @@
 #include "matrix_element_method.h"
 
-void EvaluateLoEvents(EventGenerator* eg, Parameters* p) {
+void EvaluateLoEvents(Event e, Parameters* p) {
 	double weight, error;
 	double x[4];
 	double jac = 1.0;
@@ -8,16 +8,20 @@ void EvaluateLoEvents(EventGenerator* eg, Parameters* p) {
 	std::vector<Histogram*>* empty_histogram_set = 
 		new std::vector<Histogram*>();
 	IntegrationVariablesMap v = MapToHyperCube(lo_variables, x, jac);
-	for (auto& e : eg->GetEvents()) {
-		std::tie(
+	std::tie(
 			v["k1p"], v["phi1"], v["theta1"], v["theta2"], weight, error) = e;
-		double integrand = lo::Hadronic(v, wgt, p, empty_histogram_set) * jac;
-		std::cout << integrand << " " << error << std::endl;
-	}
+	double integrand = lo::Hadronic(v, wgt, p, empty_histogram_set) * jac;
+	std::cout << "#EVALUATED EVENT: "
+		<< v["k1p"] << ", "
+		<< v["phi1"] << ", "
+		<< v["theta1"] << ", "
+		<< v["theta2"] << ", "
+		<< integrand << ", "
+		<< 0.0 << std::endl;
 	delete empty_histogram_set;
 }
 
-void EvaluateNloEvents(EventGenerator* eg, Parameters* p) {
+void EvaluateNloEvents(Event e, Parameters* p) {
 	double weight, error;
 	double x[4];
 	double jac = 1.0;
@@ -39,18 +43,17 @@ void EvaluateNloEvents(EventGenerator* eg, Parameters* p) {
 	Integral* j_integral = new Integral(nlo_3_variables, j_integrands, v);
 	Integral* nlo_integral = 
 		new Integral(std::vector<Integral*>{z_integral, j_integral});
-	for (auto& e : eg->GetEvents()) {
-		std::tie(
+	std::tie(
 			v["k1p"], v["phi1"], v["theta1"], v["theta2"], weight, error) = e;
-		auto [integrand, sigma, chi] = 
+	auto [integrand, sigma, chi] = 
 			NloHadronic(v, wgt, p, empty_histogram_set, nlo_integral);
-		std::cout << v["k1p"] << " "
-			<< v["phi1"] << " " 
-			<< v["theta1"] << " "
-			<< v["theta2"] << " "
-			<< integrand << " " 
-			<< sigma << std::endl;
-	}
+	std::cout << "#EVALUATED EVENT: "
+		<< v["k1p"] << ", "
+		<< v["phi1"] << ", " 
+		<< v["theta1"] << ", "
+		<< v["theta2"] << ", "
+		<< integrand << ", " 
+		<< sigma << std::endl;
 	delete empty_histogram_set;
 	delete nlo_integral;
 }

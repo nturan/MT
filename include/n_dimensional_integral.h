@@ -32,6 +32,7 @@ public:
   std::map<std::string, Integrand> integrands_, integrands1_, integrands2_;
   IntegrationLimitsMap limits_, limits1_, limits2_;
   IntegrationVariablesMap constants_, constants1_, constants2_;
+  int GetIterations() { return iterations_; }
 
 protected:
   int dimension_, dimension1_, dimension2_, 

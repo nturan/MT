@@ -23,7 +23,7 @@ std::tuple<double, double, double> NloHadronic(
 	nlo_integral->ExecuteVegas(0, 30, 10000);
 	nlo_integral->ExecuteVegas(2, 10, 100000);
 	auto [dNLOint, integration_error, chi] =
-		nlo_integral->ExecuteVegas(2, 1, (int)calls, 1);
+		nlo_integral->ExecuteVegas(2, 1, (int)calls);
 	double dNLO = dNLOint + dNLOconst + dLO;
 	/* since other contributions are practically without error */
 	double error = integration_error; 
@@ -36,20 +36,22 @@ std::tuple<double, double, double> NloHadronic(
 		<< relative_nlo_correction << std::endl; */
 	while ( relative_nlo_error / relative_nlo_correction > accuracy ) {
 		calls *= 1.5;
-		if (calls > 5000000) { break; }
+		if (calls > 10000000) { break; }
 		auto [dNLOint, integration_error, chi] = 
 			nlo_integral->ExecuteVegas(2, 1, (int)calls);
 		dNLO = dNLOint + dNLOconst + dLO;
 		error = integration_error;
 		relative_nlo_correction = std::abs((dNLO - dLO) / dLO);
 		relative_nlo_error = std::abs(error / dNLO);
-		/*
-		std::cout << "     relative nlo error: " 
-			<< relative_nlo_error << std::endl;
-		std::cout << "relative nlo correction: " 
-			<< relative_nlo_correction << std::endl; */
-
 	}
+	std::cout << "final calls: "
+		<< calls << std::endl;
+	std::cout << " final itmx: "
+		<< nlo_integral->GetIterations() << std::endl;
+	std::cout << "     relative nlo error: "
+		<< relative_nlo_error << std::endl;
+	std::cout << "relative nlo correction: "
+		<< relative_nlo_correction << std::endl; 
 
 	return std::tie(dNLO, error, chi);
 }
