@@ -126,6 +126,16 @@ double cos3p(const double p1[4], const double p2[4]) {
     return dot3p(p1, p2) / magnitude3(p1) / magnitude3(p2);
 }
 
+void BoostInGeneratlDirection(const double p_old[4], double beta[4], double p_new[4]) {
+    double gamma = beta[0];
+    double beta_p_old = dot3p(p_old, beta);
+    double beta_squared = dot3p(beta, beta);
+    p_new[0] =                      gamma * p_old[0] - gamma * beta_p_old;
+    p_new[1] = p_old[1] - gamma * beta[1] * p_old[0] + (gamma - 1) * beta[1] * beta_p_old / beta_squared;
+    p_new[2] = p_old[2] - gamma * beta[2] * p_old[0] + (gamma - 1) * beta[2] * beta_p_old / beta_squared;
+    p_new[3] = p_old[3] - gamma * beta[3] * p_old[0] + (gamma - 1) * beta[3] * beta_p_old / beta_squared;
+}
+
 string printP(const double p[4]) {
     return "(" + to_string(p[0]) + ", " + to_string(p[1]) + ", "
         + to_string(p[2]) + ", " + to_string(p[3]) + ")";

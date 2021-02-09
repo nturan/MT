@@ -204,5 +204,8 @@ double magnitude3(const double p[4]); /* magnitude of the vector components */
 double cos3p(const double p1[4], const double p2[4]);
 /* lorentz boost along z axis                                                 */
 void boostZ(const double pOld[4], double beta, double pNew[4]);
+
+/* lorentz boost                                                              */
+void BoostInGeneratlDirection(const double p_old[4], double beta[4], double p_new[4]);
 /* print 4 vector                                                             */
 string printP(const double p[4]);

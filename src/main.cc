@@ -28,7 +28,7 @@ int main( int argc, char* argv[] ) {
 		("dynamic_scale", "Dynamic Scale", 
 			cxxopts::value<bool>()->default_value("false"))
 		("xmin", "Phase space slicing cut parameter", 
-			cxxopts::value<double>()->default_value("0.0005"))
+			cxxopts::value<double>()->default_value("0.0001"))
 		("calculateXS", "Calculate cross section: lo, nlo or lo+nlo", 
 			cxxopts::value<std::vector<std::string>>()->default_value(""))
 		("ch", "Parton channels", 

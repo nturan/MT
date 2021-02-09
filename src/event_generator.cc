@@ -17,32 +17,53 @@ std::tuple<double, double, double> NloHadronic(
 	double dLO = lo::Hadronic(v, wgt, p, histograms) * jac;
 	double dNLOconst = nlo::HadronicConstZ(v, wgt, p, histograms) * jac;
 	double accuracy = 1.0E-2;
-	double calls = 10000;
+	double calls = 150000;
 	nlo_integral->constants1_ = v;
 	nlo_integral->constants2_ = v;
+	nlo_integral->ExecuteVegas(0, 30, 10000);
+	nlo_integral->ExecuteVegas(2, 10, 100000);
 	auto [dNLOint, integration_error, chi] =
-		nlo_integral->ExecuteVegas(0, 30, (int)calls, 1);
+		nlo_integral->ExecuteVegas(2, 1, (int)calls, 1);
 	double dNLO = dNLOint + dNLOconst + dLO;
 	/* since other contributions are practically without error */
 	double error = integration_error; 
 	double relative_nlo_correction = std::abs( (dNLO - dLO) / dLO );
 	double relative_nlo_error = std::abs(error / dNLO);
+	/*
+	std::cout << "     relative nlo error: "
+		<< relative_nlo_error << std::endl;
+	std::cout << "relative nlo correction: "
+		<< relative_nlo_correction << std::endl; */
 	while ( relative_nlo_error / relative_nlo_correction > accuracy ) {
 		calls *= 1.5;
+		if (calls > 5000000) { break; }
 		auto [dNLOint, integration_error, chi] = 
-			nlo_integral->ExecuteVegas(2, 1, (int)calls, 1);
+			nlo_integral->ExecuteVegas(2, 1, (int)calls);
 		dNLO = dNLOint + dNLOconst + dLO;
 		error = integration_error;
 		relative_nlo_correction = std::abs((dNLO - dLO) / dLO);
 		relative_nlo_error = std::abs(error / dNLO);
+		/*
 		std::cout << "     relative nlo error: " 
 			<< relative_nlo_error << std::endl;
 		std::cout << "relative nlo correction: " 
-			<< relative_nlo_correction << std::endl;
+			<< relative_nlo_correction << std::endl; */
+
 	}
 
 	return std::tie(dNLO, error, chi);
 }
+
+//IntegrationVariablesMap ConvertToCmsVariables( 
+//	IntegrationVariablesMap variables_in_lab ) {
+//
+//	/*
+//	Variables_in_lab include: k1p, phi1, theta1, theta2.
+//	New variables are: s, x2, costheta12, phi12.
+//	Wait a second, this conversion seems impossible to perform. What is the jacobian is going to be? 
+//	
+//	*/
+//}
 
 EventGenerator::EventGenerator(){}
 

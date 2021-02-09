@@ -5,7 +5,7 @@ std::map<std::string, Parameters*> parameter_sets;
 std::map<std::string, std::vector<Histogram*>*> histogram_sets;
 
 std::map<std::string, std::pair<double, double>> lo_variables, 
-nlo_2_variables, nlo_3_variables, nlo_z_variables, nlo_j_variables;
+nlo_2_variables, nlo_3_variables, nlo_3_CMS_variables, nlo_z_variables, nlo_j_variables;
 
 std::map<std::string, Integrand> lo_integrands, lo_nlo_2_integrands,
 								 nlo_2_integrands, nlo_3_integrands;
@@ -109,6 +109,14 @@ void InitializeIntegrands(
 	nlo_3_variables["phi3"]   = std::make_pair(-M_PI, M_PI);
 	nlo_3_variables["theta3"] = std::make_pair(0.0, M_PI);
 
+	nlo_3_CMS_variables["s"] =
+		std::make_pair(4.0*m*m, ecms);
+	nlo_3_CMS_variables["x2"] = std::make_pair(0.0, 1.0);
+	nlo_3_CMS_variables["costheta12"] = std::make_pair(-1.0, 1.0);
+	nlo_3_CMS_variables["phi12"] = std::make_pair(-M_PI, M_PI);
+	nlo_3_CMS_variables["E3"] = std::make_pair(0.0, ecms);
+	nlo_3_CMS_variables["costheta3"] = std::make_pair(-1.0, 1.0);
+	nlo_3_CMS_variables["phi3"] = std::make_pair(-M_PI, M_PI);
 
 	for (const auto& it: parameter_sets) {
 
@@ -181,6 +189,35 @@ void ExecuteIntegralsAndPrintResults(
 }
 
 void RunTestFunction( double ecms, double m ) {
+	IntegrationLimitsMap lab_variables, cms_variables;
+
+	//typedef std::function<std::pair<std::string, double>>IntegrationLimitsFunction(IntegrationVariablesMap) ;
+	double xmin = parameter_sets["default"]->GetCutParameter();
+	lab_variables["k1p"] =
+		std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
+	lab_variables["phi1"] = std::make_pair(-M_PI, M_PI);
+	lab_variables["theta1"] = std::make_pair(0.0, M_PI);
+	lab_variables["theta2"] = std::make_pair(0.0, M_PI);
+	lab_variables["k3p"] = std::make_pair(0.0, ecms);
+	lab_variables["phi3"] = std::make_pair(-M_PI, M_PI);
+	lab_variables["theta3"] = std::make_pair(0.0, M_PI);
+
+	cms_variables["lns"] = std::make_pair(std::log(4.0*m*m), std::log(ecms*ecms));
+	cms_variables["x2"] = std::make_pair(0.0, 1.0);
+	cms_variables["costheta12"] = std::make_pair(-1.0, 1.0);
+	cms_variables["phi12"] = std::make_pair(-M_PI, M_PI);
+	cms_variables["xE3"] = std::make_pair(0.0, 1.0);
+	cms_variables["costheta3"] = std::make_pair(-1.0+xmin, 1.0-xmin);
+	cms_variables["phi3"] = std::make_pair(-M_PI, M_PI);
+
+	std::map<std::string, Integrand> real_integrands;
+
+	using namespace std::placeholders;
+	std::vector<Histogram*>* hists = new std::vector<Histogram*>();
+	real_integrands["default"] = std::bind(&nlo::Hadronic3, _1, _2, parameter_sets["default"], hists);
+	Integral real_integral(cms_variables, real_integrands);
+	real_integral.ExecuteVegas(0, 30, 50000, 1);
+	real_integral.ExecuteVegas(2, 10, 500000, 1);
 	return;
 }
 

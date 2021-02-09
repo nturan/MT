@@ -24,7 +24,8 @@ typedef std::map<
 PartonicCrossSection NoContribution;
 
 extern std::map<std::string, std::pair<double, double>> lo_variables, 
-nlo_2_variables, nlo_3_variables, nlo_z_variables, nlo_j_variables;
+nlo_2_variables, nlo_3_variables, nlo_3_CMS_variables, nlo_z_variables, 
+nlo_j_variables;
 
 extern std::map<std::string, Parameters*> parameter_sets;
 extern std::map<std::string, std::vector<Histogram*>*> histogram_sets;

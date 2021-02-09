@@ -44,7 +44,12 @@ void EvaluateNloEvents(EventGenerator* eg, Parameters* p) {
 			v["k1p"], v["phi1"], v["theta1"], v["theta2"], weight, error) = e;
 		auto [integrand, sigma, chi] = 
 			NloHadronic(v, wgt, p, empty_histogram_set, nlo_integral);
-		std::cout << integrand << " " << sigma << std::endl;
+		std::cout << v["k1p"] << " "
+			<< v["phi1"] << " " 
+			<< v["theta1"] << " "
+			<< v["theta2"] << " "
+			<< integrand << " " 
+			<< sigma << std::endl;
 	}
 	delete empty_histogram_set;
 	delete nlo_integral;
