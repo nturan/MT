@@ -1,6 +1,6 @@
 #include "matrix_element_method.h"
 
-void EvaluateLoEvents(Event e, Parameters* p) {
+void EvaluateLoEvents(std::vector<Event> events, Parameters* p) {
 	double weight, error;
 	double x[4];
 	double jac = 1.0;
@@ -8,20 +8,23 @@ void EvaluateLoEvents(Event e, Parameters* p) {
 	std::vector<Histogram*>* empty_histogram_set = 
 		new std::vector<Histogram*>();
 	IntegrationVariablesMap v = MapToHyperCube(lo_variables, x, jac);
-	std::tie(
+	for (const auto& e : events) {
+		std::tie(
 			v["k1p"], v["phi1"], v["theta1"], v["theta2"], weight, error) = e;
-	double integrand = lo::Hadronic(v, wgt, p, empty_histogram_set) * jac;
-	std::cout << "#EVALUATED EVENT: "
-		<< v["k1p"] << ", "
-		<< v["phi1"] << ", "
-		<< v["theta1"] << ", "
-		<< v["theta2"] << ", "
-		<< integrand << ", "
-		<< 0.0 << std::endl;
+		double integrand = lo::Hadronic(v, wgt, p, empty_histogram_set) * jac;
+		std::cout << "#EVALUATED EVENT: "
+			<< v["k1p"] << ", "
+			<< v["phi1"] << ", "
+			<< v["theta1"] << ", "
+			<< v["theta2"] << ", "
+			<< integrand << ", "
+			<< 0.0 << std::endl;
+	}
+	
 	delete empty_histogram_set;
 }
 
-void EvaluateNloEvents(Event e, Parameters* p) {
+void EvaluateNloEvents(std::vector<Event> events, Parameters* p) {
 	double weight, error;
 	double x[4];
 	double jac = 1.0;
@@ -43,17 +46,20 @@ void EvaluateNloEvents(Event e, Parameters* p) {
 	Integral* j_integral = new Integral(nlo_3_variables, j_integrands, v);
 	Integral* nlo_integral = 
 		new Integral(std::vector<Integral*>{z_integral, j_integral});
-	std::tie(
+	for (const auto& e : events) {
+		std::tie(
 			v["k1p"], v["phi1"], v["theta1"], v["theta2"], weight, error) = e;
-	auto [integrand, sigma, chi] = 
+		auto [integrand, sigma, chi] =
 			NloHadronic(v, wgt, p, empty_histogram_set, nlo_integral);
-	std::cout << "#EVALUATED EVENT: "
-		<< v["k1p"] << ", "
-		<< v["phi1"] << ", " 
-		<< v["theta1"] << ", "
-		<< v["theta2"] << ", "
-		<< integrand << ", " 
-		<< sigma << std::endl;
+		std::cout << "#EVALUATED EVENT: "
+			<< v["k1p"] << ", "
+			<< v["phi1"] << ", "
+			<< v["theta1"] << ", "
+			<< v["theta2"] << ", "
+			<< integrand << ", "
+			<< sigma << std::endl;
+	}
+	
 	delete empty_histogram_set;
 	delete nlo_integral;
 }

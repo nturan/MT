@@ -5,5 +5,5 @@
 #include <fstream>
 #include <iostream>
 
-void EvaluateLoEvents(Event e, Parameters* p);
-void EvaluateNloEvents(Event e, Parameters* p);
+void EvaluateLoEvents(std::vector<Event> events, Parameters* p);
+void EvaluateNloEvents(std::vector<Event> events, Parameters* p);
