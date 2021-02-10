@@ -72,15 +72,14 @@ EventGenerator::EventGenerator(){}
 EventGenerator::EventGenerator(std::string file_name) {
 	events.clear();
 	std::ifstream in_file(file_name);
+	double zero = 0.0;
 	while (!in_file.eof()) {
-		double E1, phi1, theta1, theta2, weight, error;
+		double E1, phi1, theta1, theta2;
 		in_file >> E1;
 		in_file >> phi1;
 		in_file >> theta1;
 		in_file >> theta2;
-		in_file >> weight;
-		in_file >> error;
-		events.push_back(std::tie(E1, phi1, theta1, theta2, weight, error));
+		events.push_back(std::tie(E1, phi1, theta1, theta2, zero, zero));
 	}
 }
 
