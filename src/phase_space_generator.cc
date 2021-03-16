@@ -9,11 +9,21 @@ PhaseSpaceGenerator::PhaseSpaceGenerator(
 	ecms_ = p->GetColliderEnergy();
 	xmin_ = p->GetCutParameter();
 	if (var.size() == 4) {
-		generatePS2(var);
+		if (var.count("x2") > 0) {
+			generatePS2_CMS(var);
+		}
+		else {
+			generatePS2(var);
+		}
 	}
 	else if (var.size() == 5) {
-		generatePS2(var);
 		z_ = var["z"];
+		if (var.count("x2") > 0) {
+			generatePS2_CMS(var);
+		}
+		else {
+			generatePS2(var);
+		}
 	}
 	else if (var.size() == 7) {
 		if (var.count("x2") > 0) {
@@ -30,6 +40,50 @@ PhaseSpaceGenerator::PhaseSpaceGenerator(
 	}
 }
 
+void PhaseSpaceGenerator::generatePS2_CMS(std::map<std::string, double> var){
+	double s = std::exp(var["lns"]), x2 = var["x2"];
+
+	double sqrt_s_2 = std::sqrt(s) / 2.0;
+	double costheta1 = var["costheta1"], phi1 = var["phi1"];
+	double dx2 = 1 - s / ecms_ / ecms_;
+	x2 = x2 * dx2 + s / ecms_ / ecms_;
+	double x1 = s / x2 / ecms_ / ecms_;
+
+
+	double sintheta1 = std::sqrt((1.0 - costheta1) * (1.0 + costheta1));
+	double sinphi1 = std::sin(phi1);
+	double cosphi1 = std::cos(phi1);
+
+	double beta = std::sqrt(1.0 - 4.0 * m_ * m_ / s);
+
+	double p1_cms[4], p2_cms[4], k1_cms[4], k2_cms[4];
+
+	p1_cms[0] = sqrt_s_2; p1_cms[1] = 0.0; p1_cms[2] = 0.0; p1_cms[3] = sqrt_s_2;
+	p2_cms[0] = sqrt_s_2; p2_cms[1] = 0.0; p2_cms[2] = 0.0; p2_cms[3] = -sqrt_s_2;
+
+	k1_cms[0] = sqrt_s_2; 
+	k1_cms[1] = sqrt_s_2 * beta * sintheta1 * cosphi1;
+	k1_cms[2] = sqrt_s_2 * beta * sintheta1 * sinphi1;
+	k1_cms[3] = sqrt_s_2 * beta * costheta1;
+	
+	k2_cms[0] =  sqrt_s_2;
+	k2_cms[1] = -sqrt_s_2 * beta * sintheta1 * cosphi1;
+	k2_cms[2] = -sqrt_s_2 * beta * sintheta1 * sinphi1;
+	k2_cms[3] = -sqrt_s_2 * beta * costheta1;
+
+	dGamma_ = 1.0 / 8.0 / M_PI * beta * x1 * dx2 / 4.0 / M_PI;
+	x1_ = x1;
+	x2_ = x2;
+	s_ = s;
+
+	double boost_to_lab = (x2 - x1) / (x1 + x2);
+
+	boostZ(p1_cms, boost_to_lab, p1_);
+	boostZ(p2_cms, boost_to_lab, p2_);
+	boostZ(k1_cms, boost_to_lab, k1_);
+	boostZ(k2_cms, boost_to_lab, k2_);
+
+}
 
 
 void PhaseSpaceGenerator::generatePS2(std::map<std::string, double> var)
@@ -318,7 +372,7 @@ void PhaseSpaceGenerator::generatePS3_CMS(std::map<std::string, double> var) {
 	double costheta3 = var["costheta3"], phi3 = var["phi3"];
 	double costheta12 = var["costheta12"], phi12 = var["phi12"];
 	double dx2 = 1 - s / ecms_ / ecms_;
-	x2 = x2*dx2 + s / ecms_ / ecms_;
+	x2 = x2 * dx2 + s / ecms_ / ecms_;
 	double x1 = s / x2 / ecms_ / ecms_;
 	double s12 = s - 4 * E3 * sqrt_s_2;
 	//if (x1 > 1.0 || x1 < 0) { dGamma_ = 0.0; return; }
@@ -332,83 +386,75 @@ void PhaseSpaceGenerator::generatePS3_CMS(std::map<std::string, double> var) {
 		<< "phi12: " << phi12 << std::endl; */
 
 
-	double sintheta3  = std::sqrt( (1.0 - costheta3 ) * (1.0 + costheta3 ) );
-	double sintheta12 = std::sqrt( (1.0 - costheta12) * (1.0 + costheta12) );
+	double sintheta3 = std::sqrt((1.0 - costheta3) * (1.0 + costheta3));
+	double sintheta12 = std::sqrt((1.0 - costheta12) * (1.0 + costheta12));
 
 	/* I need to control s12 in any other way */
 	//if (s < 4.0 * m_ * m_) { dGamma_ = 0.0; return; }
 	//if (s12 < 4.0 * m_ * m_) { dGamma_ = 0.0; return; }
 	//if (s12 > s) { dGamma_ = 0.0; return; }
 	double beta3 = 1.0 - s12 / s;
-	double beta12 = std::sqrt( 1.0 - 4.0*m_*m_/s12 );
+	double beta12 = std::sqrt(1.0 - 4.0 * m_ * m_ / s12);
 
-	double e3[3] = { sintheta3 * std::cos(phi3), 
-					 sintheta3 * std::sin(phi3), 
+	double e3[3] = { sintheta3 * std::cos(phi3),
+					 sintheta3 * std::sin(phi3),
 					 costheta3 };
 
-	double k12[4] = {sqrt_s_2 * (1.0 + s12 / s),
-				     sqrt_s_2 * beta3 * e3[0],
-	                 sqrt_s_2 * beta3 * e3[1],
-	                 sqrt_s_2 * beta3 * e3[2] };
+	double k12[4] = { sqrt_s_2 * (1.0 + s12 / s),
+					 sqrt_s_2 * beta3 * e3[0],
+					 sqrt_s_2 * beta3 * e3[1],
+					 sqrt_s_2 * beta3 * e3[2] };
 
-	k3_[0] =   sqrt_s_2 * (1.0 - s12 / s);
-	k3_[1] = - sqrt_s_2 * beta3 * e3[0];
-	k3_[2] = - sqrt_s_2 * beta3 * e3[1];
-	k3_[3] = - sqrt_s_2 * beta3 * e3[2];
+	
 
 	double sqrt_s12_2 = std::sqrt(s12) / 2.0;
 	double e12[3] = { sintheta12 * std::cos(phi12),
-		              sintheta12 * std::sin(phi12),
-		              costheta12};
+					  sintheta12 * std::sin(phi12),
+					  costheta12 };
 
 	double k1[4] = { sqrt_s12_2,
-		             sqrt_s12_2 * beta12 * e12[0],
-		             sqrt_s12_2 * beta12 * e12[1],
-		             sqrt_s12_2 * beta12 * e12[2]};
+					 sqrt_s12_2 * beta12 * e12[0],
+					 sqrt_s12_2 * beta12 * e12[1],
+					 sqrt_s12_2 * beta12 * e12[2] };
 
 	double k2[4] = { sqrt_s12_2,
-	               - sqrt_s12_2 * beta12 * e12[0],
-	               - sqrt_s12_2 * beta12 * e12[1],
-	               - sqrt_s12_2 * beta12 * e12[2]};
+				   -sqrt_s12_2 * beta12 * e12[0],
+				   -sqrt_s12_2 * beta12 * e12[1],
+				   -sqrt_s12_2 * beta12 * e12[2] };
 
-	double gamma   = k12[0] / std::sqrt(s12);
-	double beta[3] = { -k12[1] / k12[0], -k12[2] / k12[0],- k12[3] / k12[0] };
-	double boost_vector[4] = {gamma, beta[0], beta[1], beta[2]};
+	double gamma = k12[0] / std::sqrt(s12);
+	double beta[3] = { -k12[1] / k12[0], -k12[2] / k12[0],-k12[3] / k12[0] };
+	double boost_vector[4] = { gamma, beta[0], beta[1], beta[2] };
 
-	BoostInGeneratlDirection(k1, boost_vector, k1_);
-	BoostInGeneratlDirection(k2, boost_vector, k2_);
+	double p1_cms[4], p2_cms[4], k1_cms[4], k2_cms[4], k3_cms[4];
+	BoostInGeneratlDirection(k1, boost_vector, k1_cms);
+	BoostInGeneratlDirection(k2, boost_vector, k2_cms);
+	k3_cms[0] = sqrt_s_2 * (1.0 - s12 / s);
+	k3_cms[1] = -sqrt_s_2 * beta3 * e3[0];
+	k3_cms[2] = -sqrt_s_2 * beta3 * e3[1];
+	k3_cms[3] = -sqrt_s_2 * beta3 * e3[2];
 
-	p1_[0] = sqrt_s_2; p1_[1] = 0.0; p1_[2] = 0.0; p1_[3] = sqrt_s_2;
-	p2_[0] = sqrt_s_2; p2_[1] = 0.0; p2_[2] = 0.0; p2_[3] = -sqrt_s_2;
-	//k1_[0] = k1[0]; k1_[1] = k1[1]; k1_[2] = k1[2]; k1_[3] = k1[3];
-	//k2_[0] = k2[0]; k2_[1] = k2[1]; k2_[2] = k2[2]; k2_[3] = k2[3];
-	/*
-	std::cout << "beta12: " << beta12 << std::endl;
-	std::cout << "beta3: " << beta3 << std::endl;
-	std::cout << "k1: " << k1_[0] << " " << k1_[1] << " " << k1_[2] << " " << k1_[3] 
-		<< " with " << calcInvariantMass(k1_) << "GeV mass "<< std::endl;
-	std::cout << "k2: " << k2_[0] << " " << k2_[1] << " " << k2_[2] << " " << k2_[3] 
-		<< " with " << calcInvariantMass(k2_) << "GeV mass " << std::endl; 
-	std::cout << "k3: " << k3_[0] << " " << k3_[1] << " " << k3_[2] << " " << k3_[3] 
-		<< " with " << calcInvariantMass(k3_) << "GeV mass " << std::endl; 
+	p1_cms[0] = sqrt_s_2; p1_cms[1] = 0.0; p1_cms[2] = 0.0; p1_cms[3] = sqrt_s_2;
+	p2_cms[0] = sqrt_s_2; p2_cms[1] = 0.0; p2_cms[2] = 0.0; p2_cms[3] = -sqrt_s_2;
 	
-	std::cout << "p1 + p2 - k1 - k2 - k3: " 
-		<< p1_[0] + p2_[0] - k1_[0] - k2_[0] - k3_[0] << " "
-		<< p1_[1] + p2_[1] - k1_[1] - k2_[1] - k3_[1] << " "
-		<< p1_[2] + p2_[2] - k1_[2] - k2_[2] - k3_[2] << " "
-		<< p1_[3] + p2_[3] - k1_[3] - k2_[3] - k3_[3] << std::endl;
-
-	*/
 	
 	//double y = cos3p(p1_, k3_);
 	s_ = s;
 	x1_ = x1;
 	x2_ = x2;
-	double xg = k3_[0] / sqrt_s_2;
+	double xg = k3_cms[0] / sqrt_s_2;
 	bool soft = xg < xmin_;
 	//bool coll = y > 1.0 - xmin_ || y < -(1.0 - xmin_);
 	not_soft_ = !soft;
 	not_collinear_ = true;
 	double jac = 1.0 / 64.0 / std::pow(2 * M_PI, 5) * beta12 * beta3;
 	dGamma_ = jac*s*x1/sqrt_s_2*dx2*dE3*E3;
+
+	double boost_to_lab = (x2 - x1) / (x1 + x2);
+
+	boostZ(p1_cms, boost_to_lab, p1_);
+	boostZ(p2_cms, boost_to_lab, p2_);
+	boostZ(k1_cms, boost_to_lab, k1_);
+	boostZ(k2_cms, boost_to_lab, k2_);
+	boostZ(k3_cms, boost_to_lab, k3_);
 }

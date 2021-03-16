@@ -4,8 +4,8 @@
 std::map<std::string, Parameters*> parameter_sets;
 std::map<std::string, std::vector<Histogram*>*> histogram_sets;
 
-std::map<std::string, std::pair<double, double>> lo_variables, 
-nlo_2_variables, nlo_3_variables, nlo_3_CMS_variables, nlo_z_variables, nlo_j_variables;
+std::map<std::string, std::pair<double, double>> lo_variables, lo_variables_cms, 
+nlo_2_variables, nlo_2_variables_cms, nlo_3_variables, nlo_3_variables_cms, nlo_z_variables, nlo_j_variables;
 
 std::map<std::string, Integrand> lo_integrands, lo_nlo_2_integrands,
 								 nlo_2_integrands, nlo_3_integrands;
@@ -93,30 +93,41 @@ void InitializeIntegrands(
 	lo_variables["theta1"] = std::make_pair(0.0, M_PI);
 	lo_variables["theta2"] = std::make_pair(0.0, M_PI);
 
-	nlo_2_variables["k1p"] = 
+	nlo_2_variables["k1p"] =
 		std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
 	nlo_2_variables["phi1"] = std::make_pair(-M_PI, M_PI);
 	nlo_2_variables["theta1"] = std::make_pair(0.0, M_PI);
 	nlo_2_variables["theta2"] = std::make_pair(0.0, M_PI);
-	nlo_2_variables["z"]      = std::make_pair(0.0, 1.0);
+	nlo_2_variables["z"] = std::make_pair(0.0, 1.0);
 
-	nlo_3_variables["k1p"] = 
+	nlo_3_variables["k1p"] =
 		std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));
-	nlo_3_variables["phi1"]   = std::make_pair(-M_PI, M_PI);
+	nlo_3_variables["phi1"] = std::make_pair(-M_PI, M_PI);
 	nlo_3_variables["theta1"] = std::make_pair(0.0, M_PI);
 	nlo_3_variables["theta2"] = std::make_pair(0.0, M_PI);
-	nlo_3_variables["k3p"]     = std::make_pair(0.0, ecms);
-	nlo_3_variables["phi3"]   = std::make_pair(-M_PI, M_PI);
+	nlo_3_variables["k3p"] = std::make_pair(0.0, ecms);
+	nlo_3_variables["phi3"] = std::make_pair(-M_PI, M_PI);
 	nlo_3_variables["theta3"] = std::make_pair(0.0, M_PI);
 
-	nlo_3_CMS_variables["s"] =
-		std::make_pair(4.0*m*m, ecms);
-	nlo_3_CMS_variables["x2"] = std::make_pair(0.0, 1.0);
-	nlo_3_CMS_variables["costheta12"] = std::make_pair(-1.0, 1.0);
-	nlo_3_CMS_variables["phi12"] = std::make_pair(-M_PI, M_PI);
-	nlo_3_CMS_variables["E3"] = std::make_pair(0.0, ecms);
-	nlo_3_CMS_variables["costheta3"] = std::make_pair(-1.0, 1.0);
-	nlo_3_CMS_variables["phi3"] = std::make_pair(-M_PI, M_PI);
+	lo_variables_cms["lns"] = std::make_pair(std::log(4.0 * m * m), std::log(ecms * ecms));
+	lo_variables_cms["x2"]  = std::make_pair(0.0, 1.0);
+	lo_variables_cms["costheta1"] = std::make_pair(-1.0, 1.0);
+	lo_variables_cms["phi1"] = std::make_pair(-M_PI, M_PI);
+
+	nlo_2_variables_cms["lns"] = std::make_pair(std::log(4.0 * m * m), std::log(ecms * ecms));
+	nlo_2_variables_cms["x2"]  = std::make_pair(0.0, 1.0);
+	nlo_2_variables_cms["costheta1"] = std::make_pair(-1.0, 1.0);
+	nlo_2_variables_cms["phi1"] = std::make_pair(-M_PI, M_PI);
+	nlo_2_variables_cms["z"] = std::make_pair(0.0, 1.0);
+
+	double xmin = parameter_sets["default"]->GetCutParameter();
+	nlo_3_variables_cms["lns"] = std::make_pair(std::log(4.0 * m * m), std::log(ecms * ecms));
+	nlo_3_variables_cms["x2"] = std::make_pair(0.0, 1.0);
+	nlo_3_variables_cms["costheta12"] = std::make_pair(-1.0, 1.0);
+	nlo_3_variables_cms["phi12"] = std::make_pair(-M_PI, M_PI);
+	nlo_3_variables_cms["xE3"] = std::make_pair(0.0, 1.0);
+	nlo_3_variables_cms["costheta3"] = std::make_pair(-1.0 + xmin, 1.0 - xmin);
+	nlo_3_variables_cms["phi3"] = std::make_pair(-M_PI, M_PI);
 
 	for (const auto& it: parameter_sets) {
 
@@ -137,13 +148,13 @@ void InitializeIntegrands(
 	}
 
 	integrals["lo"]  = new std::vector<Integral*>{ 
-		new Integral(lo_variables,    lo_integrands) };
+		new Integral(lo_variables_cms,    lo_integrands) };
 	integrals["nlo"] = new std::vector<Integral*>{ 
-		new Integral(nlo_2_variables, nlo_2_integrands),
-		new Integral(nlo_3_variables, nlo_3_integrands) };
+		new Integral(nlo_2_variables_cms, nlo_2_integrands),
+		new Integral(nlo_3_variables_cms, nlo_3_integrands) };
 	integrals["lo+nlo"] = new std::vector<Integral*>{
-		new Integral(nlo_2_variables, lo_nlo_2_integrands),
-		new Integral(nlo_3_variables, nlo_3_integrands) };
+		new Integral(nlo_2_variables_cms, lo_nlo_2_integrands),
+		new Integral(nlo_3_variables_cms, nlo_3_integrands) };
 }
 
 void ExecuteIntegralsAndPrintResults(
@@ -191,7 +202,6 @@ void ExecuteIntegralsAndPrintResults(
 void RunTestFunction( double ecms, double m ) {
 	IntegrationLimitsMap lab_variables, cms_variables;
 
-	//typedef std::function<std::pair<std::string, double>>IntegrationLimitsFunction(IntegrationVariablesMap) ;
 	double xmin = parameter_sets["default"]->GetCutParameter();
 	lab_variables["k1p"] =
 		std::make_pair(0.0, std::sqrt(ecms * ecms / 4.0 - m * m));

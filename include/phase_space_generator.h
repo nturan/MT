@@ -7,6 +7,7 @@
 class PhaseSpaceGenerator {
 private:
 	void generatePS2(std::map<std::string, double> var);
+	void generatePS2_CMS(std::map<std::string, double> var);
 	void generatePS3(std::map<std::string, double> var);
 	void generatePS3_E3(std::map<std::string, double> var);
 	void generatePS3_CMS(std::map<std::string, double> var);
