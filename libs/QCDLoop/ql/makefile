@@ -1,7 +1,7 @@
 FFLAGS 	= -O 
 HERE = $(PWD)
 LIBDIR = $(HERE)/../ff/
-FC = gfortran-7
+FC = ifort
 LIBRARY	      = libqcdloop.a
 
 

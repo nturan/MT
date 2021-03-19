@@ -1,4 +1,4 @@
-FC            = gfortran-7
+FC            = ifort
 FFLAGS        = 
 
 LFLAGS	      = $(FFLAGS)

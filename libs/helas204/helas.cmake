@@ -6,5 +6,5 @@ ExternalProject_Add(${HELAS_PREFIX}
 	INSTALL_COMMAND ""
 	CONFIGURE_COMMAND ""
 	BUILD_IN_SOURCE 1
-	BUILD_COMMAND make -I objs/x86_64/gnu/
+	BUILD_COMMAND make -I objs/x86_64/intel/
 )
