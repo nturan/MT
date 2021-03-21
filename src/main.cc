@@ -115,8 +115,8 @@ int main( int argc, char* argv[] ) {
 				pdf_name, ecms, 0.5*mur, 0.5*muf, m, xmin, channels) });
 	}
 
+	InitializeIntegrands(histogram_strings, ecms, m);
 	if ( perturbation_order.size() != 0) {
-		InitializeIntegrands(histogram_strings, ecms, m);
 		ExecuteIntegralsAndPrintResults(perturbation_order, iterations, calls);
 	}
 
