@@ -49,6 +49,8 @@ public:
 	 * @param PS phase space point as instance of the PhaseSpaceGenerator
 	 * @param weight event weight as double
 	*/
+	void ActivateFilling();
+	void DeactivateFilling();
 	void Fill(PhaseSpaceGenerator PS, double weight);
 	void Print();
 	void Clear();
@@ -57,6 +59,7 @@ private:
 	std::pair<double, double> limits_;
 	unsigned int number_of_bins_;
 	double bin_width_;
+	bool filling_deactivated_;
 	ParameterFunction parameter_;
 	std::vector<Bin> data_;
 	std::vector<std::string> particles_;
