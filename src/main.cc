@@ -38,7 +38,7 @@ int main( int argc, char* argv[] ) {
 		("histogram", "Histogram creation strings", 
 			cxxopts::value<std::vector<std::string>>()->default_value(""))
 		("calls", "Number of calls to integrand", 
-			cxxopts::value<int>()->default_value("100000"))
+			cxxopts::value<int>()->default_value("10000"))
 		("iterations", "Number of vegas iterations", 
 			cxxopts::value<int>()->default_value("10"))
 		("lo_events", "Number of LO Events", 
@@ -114,8 +114,9 @@ int main( int argc, char* argv[] ) {
 			new Parameters(
 				pdf_name, ecms, 0.5*mur, 0.5*muf, m, xmin, channels) });
 	}
-
+	histogram_strings = std::vector<std::string>{"PT(top) 90 0 1800", "Y(top) 34 -3.39714 3.39714"};
 	InitializeIntegrands(histogram_strings, ecms, m);
+	perturbation_order = std::vector<std::string>{"lo+nlo" };
 	if ( perturbation_order.size() != 0) {
 		ExecuteIntegralsAndPrintResults(perturbation_order, iterations, calls);
 	}

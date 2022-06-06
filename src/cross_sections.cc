@@ -1,6 +1,8 @@
 #include "cross_sections.h"
 
-
+/**
+ * TODO better histogram fill
+*/
 std::map<std::string, Parameters*> parameter_sets;
 std::map<std::string, std::vector<Histogram*>*> histogram_sets;
 
@@ -166,8 +168,18 @@ void ExecuteIntegralsAndPrintResults(
 		std::map<std::string, std::tuple<double, double, double>> results;
 		for (const auto& ij: *(integrals.find(it)->second)) {
 			std::cout << "#INITIALISING GRID" << std::endl;
+			for (const auto& parameter_set : parameter_sets) {
+				for (const auto& histogram : *(histogram_sets.find(parameter_set.first)->second)) {
+					histogram->DeactivateFilling();
+				}
+			}
 			ij->ExecuteVegas(1, 30, 10000, 1);
 			std::cout << "#VEGAS_START" << std::endl;
+			for (const auto& parameter_set : parameter_sets) {
+				for (const auto& histogram : *(histogram_sets.find(parameter_set.first)->second)) {
+					histogram->ActivateFilling();
+				}
+			}
 			ij->ExecuteVegas(2, iterations, calls, 1);
 			std::cout << "#VEGAS_END" << std::endl;
 
@@ -180,6 +192,10 @@ void ExecuteIntegralsAndPrintResults(
 				err_old = std::sqrt(err_old * err_old + err_new * err_new);
 				chi_old = (chi_old != 0 ? 0.5 : 1.0) * (chi_old + chi_new);
 				results[ik.first] = std::make_tuple(val_old, err_old, chi_old);
+				/*for (const auto& il : *(histogram_sets.find(ik.first)->second)) {
+					il->Print();
+					il->Clear();
+				}*/
 			}
 		}
 		for (const auto& ij: results) {

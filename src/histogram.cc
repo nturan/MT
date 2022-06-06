@@ -95,7 +95,20 @@ Histogram::Histogram(std::string initialization_string, Parameters* p) {
 	pdf_name_ = p->GetPdfName();
 }
 
+void Histogram::ActivateFilling()
+{
+	filling_deactivated_ = false;
+}
+
+void Histogram::DeactivateFilling()
+{
+	filling_deactivated_ = true;
+}
+
 void Histogram::Fill(PhaseSpaceGenerator PS, double weight){
+	if (filling_deactivated_) {
+		return;
+	}
 	std::map<std::string, double*> momenta;
 	momenta["top"]  = PS.k1_;
 	momenta["atop"] = PS.k2_;
