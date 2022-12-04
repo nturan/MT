@@ -2,7 +2,6 @@
 # project specific logic here.
 #
 cmake_minimum_required (VERSION 3.8)
-
 enable_language(Fortran)
 set(CMAKE_CXX_STANDARD 17)
 set(MT "ttbar_NLO")
@@ -49,6 +48,7 @@ target_link_libraries(${MT} cxxopts)
 
 target_link_libraries(${MT} "-lgsl -lgslcblas")
 target_link_libraries(${MT} "-lLHAPDF")
+target_link_libraries(${MT} "-lstdc++")
 
 target_include_directories(${MT} PUBLIC "include")
 target_include_directories(${MT} PUBLIC "/usr/include")
