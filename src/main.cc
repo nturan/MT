@@ -114,9 +114,9 @@ int main( int argc, char* argv[] ) {
 			new Parameters(
 				pdf_name, ecms, 0.5*mur, 0.5*muf, m, xmin, channels) });
 	}
-	histogram_strings = std::vector<std::string>{"PT(top) 90 0 1800", "Y(top) 34 -3.39714 3.39714"};
+	// histogram_strings = std::vector<std::string>{"PT(top) 90 0 1800", "Y(top) 34 -3.39714 3.39714"};
 	InitializeIntegrands(histogram_strings, ecms, m);
-	perturbation_order = std::vector<std::string>{"lo+nlo" };
+	// perturbation_order = std::vector<std::string>{"lo+nlo" };
 	if ( perturbation_order.size() != 0) {
 		ExecuteIntegralsAndPrintResults(perturbation_order, iterations, calls);
 	}
