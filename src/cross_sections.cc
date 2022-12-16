@@ -201,15 +201,15 @@ void ExecuteIntegralsAndPrintResults(
 		for (const auto& ij: results) {
 			double val, err, chi;
 			std::tie(val, err, chi) = ij.second;
-			std::cout << "#RESULTS for " << it << " with " << ij.first << ": "
-				<< val << " +/- " << err
-				<< " with chi2 = " << chi << std::endl;
 			std::cout << "Histograms for parameter set: " 
 				<< ij.first << std::endl;
 			for (const auto& ik: *(histogram_sets.find(ij.first)->second) ) {
 				ik->Print();
 				ik->Clear();
 			}
+			std::cout << "#RESULTS for " << it << " with " << ij.first << " parameter set: "
+				<< val << " +/- " << err
+				<< " with chi2 = " << chi << std::endl;
 		}
 	}
 

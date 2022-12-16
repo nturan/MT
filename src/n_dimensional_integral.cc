@@ -55,7 +55,8 @@ std::tuple<double, double, double> Integral::ExecuteVegas(
 
   integrator_->setitmx(iterations_);
   integrator_->setncall(calls_);
- 
+
+  iterations_ = itmx;
 
   integrator_->setnprn(nprn);
 
@@ -106,7 +107,7 @@ double Integral::f(double x[],double wgt, double res[]) {
 
   int i = 0;
   int number_of_calls = integrator_->getcalls();
-  double weight = wgt / number_of_calls / iterations_ * jac;
+  double weight = wgt / number_of_calls / iterations_;// * jac;
   for ( auto it = integrands_.begin(); it != integrands_.end(); ++it ) {
       res[i] = it->second(variables, weight) * jac;
       ++i;
