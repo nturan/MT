@@ -7,8 +7,8 @@ else
 endif
 
 ifeq ("$(COMPILER)", "intel")
-  CXX = icpc
-  CC = icc
+  CXX = icx
+  CC = icx
   FC = ifort
   SETCXXOUT = -c -o
   SETLDOUT = -o

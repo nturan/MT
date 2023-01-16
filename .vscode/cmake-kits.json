@@ -1,0 +1,11 @@
+[
+    {
+      "name": "Intel One API",
+      "toolchainFile": "/opt/intel/oneapi/compiler/latest/linux/IntelDPCPP/IntelDPCPPConfig.cmake",
+      "compilers": {
+        "C": "/opt/intel/oneapi/compiler/latest/linux/bin/icx",
+        "CXX": "/opt/intel/oneapi/compiler/latest/linux/bin/icx",
+        "Fortran": "/opt/intel/oneapi/compiler/latest/linux/bin/intel64/ifort"
+      }
+    }
+  ]
